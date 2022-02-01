@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MM</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src="/mmsite_script"></script>
+        <style>
+       			#maindiv{
+	      			width: 100%;
+	      			border: thick double #32a1ce;
+	       		}
+       			#formdiv{
+	      			width: 100%;
+	      			border: thick double red;
+	       		}
+       			.query{
+        				border: dotted;
+       			}
+       			.form{
+        				border: dashed;
+       			}
+        </style>
+    </head>
+<body onload="setMmsitRevision()"> 
+	<h4> ---mmsite---<br>
+	<i id="mmsitRevision"></i><br>
+	<i> The backend compiled at :::220131_0700:::; query num = {{.ReqNum}}</i><br>
+	<p> This button changes the language of the pages, if there is a variant.
+		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
+		There is not true supporting of different languages.<br>
+		That is the button gives you another variant (if it is) wich may be not the same in details.
+	</p>
+	</h4>
+<div id="maindiv">Этот сайт задуман вместо резюме. <br>
+    То есть его цель - дать информацию возможному работодателю об авторе.<br>
+    Другими слоаами, автор выставляет себя как программиста и надеется, что содержимое этого сайта кому-то покажет, что автора стоит нанимать.<br>
+    Правда, умные люди мне говорили, что эту бредятину никто не посмотрит. А вдруг?<br>
+    <br>
+    <br>
+    Автору можно послать письмо. См. форму <b>Letter</b> ниже.<br>
+    Есть телефон для SMS:+79534737768.<br>
+    <br>
+    Внизу ссылки на детали<br>
+	Конечно, помомо приведенных есть много других запросом к серверу, но они служебные и вряд ли интересны.<br>
+	<div class="query">
+		<a href="/aboutAuthor"> Запрос /aboutAuthor - о карьере автора,его умениях и прочее</a>
+	</div><br><!-- query /aboutAuthor -->
+	<div class="query">
+		Если есть желание посмотреть как этот сайт делался, то сюда.<br>
+		Зачем? Вдруг, как я уже говорил, кто-то заинтерасуетя моей персоной. Тогда здесь исключительно фактический материал, который сквжет все опытному.<br>
+		<a href="/history"> Запрос /history</a>
+	</div><br><!-- query /aboutAuthor -->
+	<div class="query">
+		Покажет, кто (IP) и когда (was first enter when) заходил на свйт<br>
+		<a href="/accounts">/accounts</a>
+	</div><br><!-- query /aboutAuthor -->
+</div><!-- id="maindiv" -->
+
+<div id="formdiv">
+	Вверху приведены "жесткие" ссылки, то есть те, которые Вы никак не можете изменить<br>
+	Здесь же приведены "формы" (каждая окружена черточками), в которых Вы можете выдать запрос с вашими параметрами<br>
+	Например, запрос "About" требует указания пароля (/about?pw={password, который нужно ввести}) и в форме есть поле дла его ввода<br>
+	Результат запроса выводится, как правило, в iframe внизу (окружен черной рамкой), но может быть выведен и в другое место.<br>
+	
+	<div class="form">
+		<b>About</b><br>
+		Этот запрос вернет рассказ о некоторых чертах той машины, на которой крутиться the backend, то есть http сервер.
+	<form action="/about" target="formres">
+		Пароль:<input type="text" name="pw" value="none"><br>
+		<input type="submit" value="Submit">
+	</form> 
+	</div><!-- form /about -->
+
+	<div class="form">
+		<b>Sms</b><br>
+		Этот запрос пошлет sms автору сайта.
+	<form action="/sms" target="formres">
+		Пароль:<input type="text" name="pw" value="none"><br>
+		sms (not more 20 lettes):<input type="text" name="sms" value="none" maxlength="20"><br>
+		<input type="submit" value="Submit">
+	</form> 
+	</div><!-- form /sms -->
+
+	<div class="form">
+		<b>Letter</b><br>
+		Этот запрос пошлет письмо автору сайта и, одновременно, уведомляющее автора sms.<br>
+		Если там будет вопрос и адрес электронной почты, то автор постарается вам ответить<br>
+		Следует иметь в виду, что письмо будет обрезано, если в нем более 3000 букв, и что емкость хранилища писем 10<br>
+		То есть, есть вероятность, что ваше письмо будет потеряно<br>
+	<form action="/letter" target="formres">
+		<textarea id="cont" name="cont" rows="4" cols="50">
+		</textarea><br>
+		<input type="submit" value="Submit">
+	</form> 
+	</div><!-- form /sms -->
+
+
+
+</div><!-- formdiv -->
+<iframe id="formres" name="formres" width="100%" style="border:2px solid black;"></iframe>	
+</body>
+
+</html>
+
+

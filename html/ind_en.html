@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MM</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src="/mmsite_script"></script>
+       <style>
+       			#maindiv{
+	      			width: 100%;
+	      			border: thick double #32a1ce;
+	       		}
+       			.query{
+        				border: dotted;
+       			}
+        </style>
+    </head>
+<body onload="setMmsitRevision()"> 
+	<h4> ---mmsite---<br>
+	<i id="mmsitRevision"></i><br>
+	<i> The backend compiled at :::220131_0700:::; query num = {{.ReqNum}}</i><br>
+	<p> This button changes the language of the pages, if there is a variant.
+		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
+		There is not true supporting of different languages.<br>
+		That is the button gives you another variant (if it is) wich may be not the same in details.
+	</p>
+	</h4>
+<div id="maindiv">A purpose of this site is to serve as a resume; that is to give an info about the author to a potential employer.<br>
+    In other words, the author posites himself as a programmer and hopes that there is an employer which will hire him.<br>
+    There is a wise man that said to me that this nonsense nobody will read. But what if?<br>
+    <br>
+    To contact the author you may send a letter. See form of <b>Letter</b> below.<br>
+    Also there are telephone for SMS:+79534737768.<br>
+    <br>
+    Beneath you may see referenses (in boxes circled by dots) that details the info<br>
+	Of cause, there are many other requests, that the backend recognized; but them are service and unlikely interesting<br>
+	<div class="query">
+		<a href="/aboutAuthor"> Query /aboutAuthor - about author's career and his skills</a>
+	</div><br><!-- query /aboutAuthor -->
+	<div class="query">
+		If somebody will want to see how this site has been creating then please here.<br>
+		<a href="/history"> Query /history - about the history of creating this site</a>
+		This page in main part for the author himself - to see quickly what and when has he done.<br>
+		But if you are curious - welcome.
+	</div><br><!-- query /aboutAuthor -->
+	<div class="query">
+		<a href="/accounts">/accounts</a>
+	</div><br><!-- query /aboutAuthor -->
+<div id="formdiv">
+	Above there are references that allows you only reading.<br>
+	But below there are forms that give you some interaction.<br>
+	Thus, by the form of <b>Letter</b> you may send a letter to author.<br>
+
+	<div class="form">
+		<b>Letter</b><br>
+		Этот запрос пошлет письмо автору сайта и, одновременно, уведомляющее автора sms.<br>
+		Если там будет вопрос и адрес электронной почты, то автор постарается вам ответить<br>
+		Следует иметь в виду, что письмо будет обрезано, если в нем более 3000 букв, и что емкость хранилища писем 10<br>
+		То есть, есть вероятность, что ваше письмо будет потеряно<br>
+	<form action="/letter" target="formres">
+		<textarea id="cont" name="cont" rows="4" cols="50">
+		</textarea><br>
+		<input type="submit" value="Submit">
+	</form> 
+	</div><!-- form /sms -->
+
+
+
+</div><!-- formdiv -->
+<iframe id="formres" name="formres" width="100%" style="border:2px solid black;"></iframe>	
+
+</div><!-- id="maindiv" -->
+
+	
+</body>
+
+</html>
+
+
