@@ -14,7 +14,7 @@ echo -----------------------------------
 starttime=$(date +%y%m%d_%H%M)
 echo Start:$starttime ==================================
 
-scp -r html image  favicon.ico mmsit.js root@95.213.191.152:~/mmst 
+scp -r html image  favicon.ico mmsit.js mystyle.css root@95.213.191.152:~/mmst 
 
 
 

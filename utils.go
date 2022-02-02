@@ -75,9 +75,9 @@ func MyServeFile(w http.ResponseWriter, r *http.Request, fileName string) {
 	msg = fmt.Sprintf("<p>%s</p>", b)
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
-	if isDebug(serverMode) {
-		fmt.Printf("MyServeFile: RequestURI =%v, actualLang=%v, file=%s\n%s\n", r.RequestURI, getLang(r), fileName, b[:100])
-	}
+	//if isDebug(serverMode) {
+	//	fmt.Printf("MyServeFile: RequestURI =%v, actualLang=%v, file=%s\n%s\n", r.RequestURI, getLang(r), fileName, b[:100])
+	//}
 }
 
 //220128 10:29

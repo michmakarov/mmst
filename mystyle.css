@@ -1,0 +1,16 @@
+/* 	:::0.0-1-ge8a5e5d[branch_*main,commit_e8a5e5d]_220202_1607:::  */
+#maindiv{
+	width: 100%;
+	border: thick double #32a1ce;
+}
+#formdiv{
+	width: 100%;
+	border: thick double red;
+}
+.query{
+		border: dotted;
+}
+.form{
+		border: dashed;
+}
+

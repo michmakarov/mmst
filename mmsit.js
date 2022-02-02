@@ -3,8 +3,9 @@
 
 //22201 07:02 it is a descendant of freelancer/mmsite/mmsit.js 
 
+//versionInfo = :::0.0-1-ge8a5e5d[branch_*main,commit_e8a5e5d]_220202_1607:::
 
-var mmsitRevision="22201 07:02"
+//var mmsitRevision="22201 07:02"
 
 
 
@@ -105,10 +106,11 @@ function changeLang(){
 
 
 //220201 08:01
-function setMmsitRevision(){
-	var el = document.getElementById("mmsitRevision");
-	el.innerHTML="Front(nnsit.js) revision="+mmsitRevision;
-}
+//220202 13:55
+//function setMmsitRevision(){
+//	var el = document.getElementById("mmsitRevision");
+//	el.innerHTML="Front(nnsit.js) revision="+mmsitRevision;
+//}
 
 
 

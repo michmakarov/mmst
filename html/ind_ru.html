@@ -3,28 +3,12 @@
     <head>
         <title>MM</title>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="/css">
         <script src="/mmsite_script"></script>
-        <style>
-       			#maindiv{
-	      			width: 100%;
-	      			border: thick double #32a1ce;
-	       		}
-       			#formdiv{
-	      			width: 100%;
-	      			border: thick double red;
-	       		}
-       			.query{
-        				border: dotted;
-       			}
-       			.form{
-        				border: dashed;
-       			}
-        </style>
     </head>
-<body onload="setMmsitRevision()"> 
-	<h4> ---mmst---<br>
-	<i id="mmsitRevision"></i><br>
-	<i> The backend compiled at :::220202_0813:::; query num = {{.ReqNum}}</i><br>
+<body> 
+	<h4><br>
+	<i> :::0.0-1-ge8a5e5d[branch_*main,commit_e8a5e5d]_220202_1607::: query num = {{.ReqNum}}</i><br>
 	<p> This button shows actual language and changes it.
 		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
 		There is not true supporting of different languages.<br>

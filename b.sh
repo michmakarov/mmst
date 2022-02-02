@@ -27,52 +27,39 @@ echo The compilation was successful;
 echo ver: $versionInfo;
 fi
 
-exit
 
-#sed -i "s/---.*---/---$appname from $compiltime---/" mn.go
-#sed -i "s/---.*---/---$appname---/" ind.html
-#sed -i "s/:::.*:::/:::$compiltime:::/" ind.html
+sed -i "s/:::.*:::/:::$versionInfo:::/" html/*.html mmsit.js mystyle.css
 
-#if [ $? != 0 ]; then 
-#echo the sed failed
 #exit
-#fi
 
 
 
-
-#scp -r $appname html image b.sh set_ind.sh *.go favicon.ico mmsit.js mmsite qqmak@192.168.1.44:~/Progects/freelancer/mmsite 
-#if [ $? != 0 ]; then 
-#echo the copying to 44 failed
-#exit
-#fi
-echo stopping start ----------------------------------
-ssh root@95.213.191.152 "pkill mmsite;"
-echo stoping end -------------------------------------
-
-echo scp start ==================================
-
-scp -r $appname html image  b.sh set_ind.sh *.go favicon.ico mmsit.js root@95.213.191.152:~/mmsite 
 if [ $? != 0 ]; then 
-echo the copying to Vscale failed
-#exit
+echo the sed failed
+exit
 fi
 
+echo stopping mmst start ----------------------------------
+ssh root@95.213.191.152 "pkill mmst;"
+echo stoping mmst end -------------------------------------
 
+
+echo scp start ==================================
+scp -r $appname html image  b.sh *.go favicon.ico mmsit.js mystyle.css root@95.213.191.152:~/mmst 
 echo scp end ==================================
 
 
 echo deleting files start ----------------------------------
-ssh root@95.213.191.152 "cd mmsite;rm *.log nohup.out"
+ssh root@95.213.191.152 "cd mmst;rm *.log nohup.out"
 echo deleting files end -------------------------------------
 
-echo launching start ----------------------------------
+echo launching start ====================================
 echo no realization yet ssh root@95.213.191.152 "cd mmsite;nohup ./mmsite & ;pgrep mmsite "
-echo launching end -------------------------------------
+echo launching end ======================================
 
 
 
-#rm $appname
+
 echo Ok
 
 

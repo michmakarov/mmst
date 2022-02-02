@@ -53,6 +53,11 @@ func myFamilyHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//220202 15:37
+func cssHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "mystyle.css")
+}
+
 //220111 14:59; 220125 05:50
 func aboutAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	var fileName__ string

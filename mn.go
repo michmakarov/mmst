@@ -69,6 +69,7 @@ func main() {
 	mx.HandleFunc("/accounts", accountsHandler)
 	mx.HandleFunc("/sms", smsHandler)
 	mx.HandleFunc("/letter", letterHandler)
+	mx.HandleFunc("/css", cssHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 
@@ -81,7 +82,7 @@ func main() {
 	}
 
 	srv.RegisterOnShutdown(onShutDown)
-	/* 220202 08:22 All this now does the b.sh
+	/* 220202 08:22 All this now will do the b.sh
 	//220106 18:11
 	var err error
 	var proc *os.Process
