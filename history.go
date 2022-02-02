@@ -87,4 +87,11 @@ ______13:50 With Opera the err is not. Furthermore, if the change is done in the
 The problem: On the github (https://github.com/michmakarov/mmsite) there is the key file, that is a private key.
 It is not seemed well: I cannot make the repository public.
 I did not found a better decision than to create a new repository with name "mmst"
+______06:16 See "creting_this_rep.txt" for some details.
+______08:11 What are the frontend and the backend? There is a urge want to get a clear answer and to make accordingly the versions showing. 
+______15:56 As the server (that is the backend) yields all let's say that namely it embodies the system in whole.
+Hence the server must generate the version (whatever it means) and spread it to all components of the system.
+++++++++++++++++++++++++++++++++++++++++++++++++
+220202 04:50 What is system? Are system and application synonyms? In answering we fall into dim pit of utter ambiguity.
+So the b.sh generates a version and spreads it to *.html, mmsit.js and mmsit.css
 `

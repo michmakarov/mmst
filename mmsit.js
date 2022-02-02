@@ -1,30 +1,16 @@
 
 "use strict";
 
-//220110 10:30 
-//The /home/mich412/go/src/mak_common/kjs/xhr.js have been taken as a prototype
-//220111 04:10 The functions here (in general) are strongly bimded to the mmsite project
+//22201 07:02 it is a descendant of freelancer/mmsite/mmsit.js 
 
 
-var mmsitRevision="221027 17:22"
+var mmsitRevision="22201 07:02"
 
 
 
-//For what does it serve? I just have liked it, it's all
-//Let it remains. Others I will remove and needed things will be worked out at scratch.
-function makeid(len) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < len-1; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return text;
-}
-
-//210111 04:07
+//220201 07:05
 //This makes a get query with responseType="text" and setting the answer or error message as string into given elemment (which defined by the id, the parameter elid)
-//220124 18:15 my be elid==undefined//220126 04:44 This is brilliant an example of absence of pondering or a flashy bad decision. So let's to play back.
 function getQuery(uri, elid){
 	var  el
 	if (typeof elid !== 'undefined') {
@@ -58,7 +44,8 @@ function getQuery(uri, elid){
 		return xhr;
 }
 
-//220126 05:14 It performs the func if it obtained a status 200.
+//220201 07:12 It performs the func if it obtained a status 200.
+//If it encounts an error it throws an exception
 function getQueryFunc(uri, func){
 	if (typeof func == 'undefined') {
 		throw "getQueryFunc: no a function to work out the result"
@@ -86,11 +73,9 @@ function getQueryFunc(uri, func){
 		return xhr;
 }
 
-//220111 12:26
-//220113 11:48
-//220124 18:18
 //220125 In searching langErr220124
 //220126 06:52 The comments was leaved for historic resons
+//220201 07:25
 function changeLang(){
 	var btn = document.getElementById("langchanging");
 	var btnCont=btn.innerHTML;
@@ -119,7 +104,7 @@ function changeLang(){
 }
 
 
-//220125 07:55
+//220201 08:01
 function setMmsitRevision(){
 	var el = document.getElementById("mmsitRevision");
 	el.innerHTML="Front(nnsit.js) revision="+mmsitRevision;

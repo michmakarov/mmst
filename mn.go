@@ -23,7 +23,9 @@ const timeFormat = "20060102_15:04:05"
 const maxLetters = 10
 const maxChars = 3000
 
-var appName = "---mmsite from 220131_1448---" //It is assigned in actual value by b.sh
+//var appName = "---mmsite from 220131_1448---" //It is assigned in actual value by b.sh
+
+var versionInfo = "version not assigned yet" //220202 06:26
 
 var RequestCounter uint32 //increased atomically by each handler
 
@@ -40,7 +42,7 @@ var serverMode int
 
 var flr *feeler //220108 08:22
 
-var lang string = "ru"
+//var lang string = "ru"
 var passWord string = "***not assigned yet***"
 
 //Those are default values. See func setArg()
@@ -79,7 +81,7 @@ func main() {
 	}
 
 	srv.RegisterOnShutdown(onShutDown)
-
+	/* 220202 08:22 All this now does the b.sh
 	//220106 18:11
 	var err error
 	var proc *os.Process
@@ -98,7 +100,8 @@ func main() {
 		fmt.Printf("The ind.html was successly changed; procSt.String():\n%v\n", procSt.String())
 	}
 	//time.Sleep(time.Second)
-	fmt.Printf("%v\n", appName)
+	*/
+	fmt.Printf("ver: %v\n", versionInfo)
 	fmt.Printf("The server will be listen at %v, mode=%v\n\n", listeningAddr, serverMode)
 	//-----220106 18:11
 

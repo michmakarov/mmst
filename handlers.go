@@ -41,7 +41,7 @@ func e_2Handler(w http.ResponseWriter, r *http.Request) {
 	msg = fmt.Sprintf("<p>%s</p>", b)
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
-	fmt.Printf("e_2Handler RequestURI =%v, actualLang=%v\n", r.RequestURI, lang)
+	//fmt.Printf("e_2Handler RequestURI =%v, actualLang=%v\n", r.RequestURI, lang)
 
 }
 

@@ -1,28 +1,45 @@
 #!/bin/bash
 
-#220124 18:36 + stopping and starting the server on 95.213.191.152
+echo 220202 06:29 I do not know yet what it does
 
 
 appname="${PWD##*/}"
-
-echo 220104 10:57 220106 17:16 220124 18:36 It is for 1. building $appname 2. stopping  and copying 3. starting
 compiltime=$(date +%y%m%d_%H%M)
+last_git_commit=$(git log --pretty=format:"%h" -n 1)
+branch=$(git branch | sed 's/ //g' )
+last_git_commit_tag=$(git describe --tags $last_git_commit)
+
+if [ $branch != *main ]; then 
+echo The branch is not main : $last_git_commit_tag
+exit
+fi
+
+versionInfo=$(echo $appname_$last_git_commit_tag[branch_$branch,commit_$last_git_commit]_$compiltime)
 
 
-sed -i "s/---.*---/---$appname from $compiltime---/" mn.go
+go build -ldflags "-X main.versionInfo=$versionInfo"
+
+if [ $? != 0 ]; then 
+echo golang building failed;
+exit;
+else
+echo The compilation was successful;
+echo ver: $versionInfo;
+fi
+
+exit
+
+#sed -i "s/---.*---/---$appname from $compiltime---/" mn.go
 #sed -i "s/---.*---/---$appname---/" ind.html
 #sed -i "s/:::.*:::/:::$compiltime:::/" ind.html
 
-if [ $? != 0 ]; then 
-echo the sed failed
-exit
-fi
+#if [ $? != 0 ]; then 
+#echo the sed failed
+#exit
+#fi
 
-go build
-if [ $? != 0 ]; then 
-echo the go build failed
-exit
-fi
+
+
 
 #scp -r $appname html image b.sh set_ind.sh *.go favicon.ico mmsit.js mmsite qqmak@192.168.1.44:~/Progects/freelancer/mmsite 
 #if [ $? != 0 ]; then 

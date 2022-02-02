@@ -15,13 +15,15 @@
         </style>
     </head>
 <body onload="setMmsitRevision()"> 
-	<h4> ---mmsite---<br>
+	<h4> ---mmst---<br>
 	<i id="mmsitRevision"></i><br>
-	<i> The backend compiled at :::220131_0700:::; query num = {{.ReqNum}}</i><br>
-	<p> This button changes the language of the pages, if there is a variant.
+	<i> The backend compiled at :::220202_0813:::; query num = {{.ReqNum}}</i><br>
+	<p> This button shows actual language and changes it.
 		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
 		There is not true supporting of different languages.<br>
-		That is the button gives you another variant (if it is) wich may be not the same in details.
+		That is the button gives you another variant (if it is) wich may be not the same in details.<br>
+		At 220102 such button is only here. It means that you can switch the variant only here and after it is necessary to reload interested page.<br>
+		In fact only the "/aboutAuthor" (besides this page) has two variants.
 	</p>
 	</h4>
 <div id="maindiv">A purpose of this site is to serve as a resume; that is to give an info about the author to a potential employer.<br>
