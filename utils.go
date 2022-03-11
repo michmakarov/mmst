@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 func qqqutils() {
@@ -203,4 +204,115 @@ func truncLetDir() {
 	for _, item := range letInfos {
 		os.Remove("letters/" + item.Name())
 	}
+}
+
+//220302 17:30 for saveAccountList (accounts.go)
+//220307 07:37 An example of result: "lang=en qqq=", that is the qqq key is empty.
+func optsToStr(opts map[string]string) string {
+	var res string
+	var err error
+	var keyCount int //220307 09:23
+
+	if opts == nil { //220307 08:58
+		panic("optsToStr: nill not allowed as parameter")
+	}
+	if len(opts) == 0 {
+		panic("optsToStr: empty map not allowed as parameter")
+	}
+
+	for key, val := range opts {
+		keyCount++
+		if err = goodString(key); err != nil {
+			panic("optToStr: Bad key:" + err.Error())
+		}
+		if err = goodString(val); err != nil {
+			panic("optToStr: bad value:" + err.Error())
+		}
+
+		if keyCount == 1 {
+			fmt.Sprintf("%s=%s", key, val)
+		} else {
+			res = res + " " + fmt.Sprintf("%s=%s", key, val)
+		}
+	}
+	return res
+}
+
+//220303 08:14 --16:18
+func goodString(s string) (err error) {
+	if s == "" {
+		return
+	}
+	for _, val := range s { //220307 10:48 11:14 - it is seemed useless but let it be
+		if val == '=' {
+			err = fmt.Errorf("%s is bad (= character is not allowed)", s)
+			return
+		}
+
+	}
+	if !utf8.Valid([]byte(s)) {
+		err = fmt.Errorf("%s is bad (as utf8.Valid says)", s)
+		return
+	}
+	for ind, runeVal := range s {
+		if runeVal <= 20 {
+			return fmt.Errorf("%s has bad run (%s) at %i", s, string(runeVal), ind)
+		}
+	}
+	return
+}
+
+//220307 07:33 for saveAccountList (accounts.go)
+//220310 11:27
+func strToOpts(s string) (opts map[string]string) {
+	var optsSlice, optSlice []string
+
+	if s == "" {
+		panic("strToOpts: An empty parameter is not allowed")
+	}
+
+	opts = make(map[string]string)
+	optsSlice = strings.Fields(s)
+	for _, keyVal := range optsSlice {
+		optSlice = strings.Split(keyVal, "=")
+		if len(optSlice) > 2 {
+			panic(fmt.Sprintf("Bad record of option(%s): more than one equation mark", keyVal))
+		}
+		if len(optSlice) == 1 { //220307 11:08 - it is a need to check that splitting "qqq=" gives a slice with two components
+			panic(fmt.Sprintf("Bad record of option(%s): no equation mark", keyVal))
+		}
+		opts[optSlice[0]] = optSlice[1]
+	}
+	return opts
+}
+
+//220309 10:52 it panics if n is not a valid account name
+func checkAccontName(n string) string {
+	if n == "" {
+		panic("checkAccontName: name cannot be empty.")
+	}
+	return n
+}
+
+//220309 10:52 it panics if tp is not represent a valid account.Tp
+func convAccontTp(tp string) (res int) {
+	var err error
+	if res, err = strconv.Atoi(tp); err != nil {
+		panic(fmt.Sprintf("convAccontTp: %s is not a valid integer", tp))
+	}
+
+	if res != 0 {
+		panic(fmt.Sprintf("convAccontTp: only 0 is allowed but there is %d", res))
+	}
+
+	return res
+}
+
+//220309 14:00 it panics if tm is not represent a valid account.RegTm
+func convAccountTm(tm string) (res time.Time) {
+	var err error
+	if res, err = time.Parse(timeFormat, tm); err != nil {
+		panic(fmt.Sprintf("convAccontTm: conversion %s err=%s", tm, err.Error()))
+	}
+	return res
 }

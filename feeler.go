@@ -31,7 +31,7 @@ func createFeeler(h http.Handler) (f *feeler) {
 
 	return f
 }
-func (f *feeler) WriteFLof(r *http.Request) {
+func (f *feeler) WriteFLog(r *http.Request) {
 	var err error
 	if _, err = f.log.WriteString(fmt.Sprintf("%s:%d--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.feelerCount, r.RequestURI, r.RemoteAddr)); err != nil {
 		panic(fmt.Sprintf("writing into feeler log file err=%s", err.Error()))
@@ -49,7 +49,7 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	atomic.AddInt64(&f.feelerCount, 1)
-	f.WriteFLof(r)
+	f.WriteFLog(r)
 	regAccount(r)
 
 	if isDebug(serverMode) {

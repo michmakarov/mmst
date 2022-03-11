@@ -94,4 +94,23 @@ Hence the server must generate the version (whatever it means) and spread it to 
 ++++++++++++++++++++++++++++++++++++++++++++++++
 220202 04:50 What is system? Are system and application synonyms? In answering we fall into dim pit of utter ambiguity.
 So the b.sh generates a version and spreads it to *.html, mmsit.js and mmsit.css
+++++++++++++++++++++++++++++++++++++++++++++++++
+220204 05:02 What is knowing of a language?
+Yesterday I attempted to public the site on https://freelancehunt.com and had a problem.
+For desision of it I took "<meta name='freelancehunt' content='cc9a588ee5dcfce'>"
+In the context of it the question is emerged - What is a meta tag?
+++++++++++++++++++++++++++++++++++++++++++++++++
+220302 16:05 There is a puzzle. Let its name be "accoutPuzzle" and it sounds as "How  the accounts list is formed at starting server".
+The answer: no way, at starting the list is empty!
+The next question: it is good or bad?
+If we say that a user should not notice that a new version of the server was started then it is bad.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220307 17:57 The further into forest, the more partisans
+Now a need of a log has arisen. Indeed, what to do if file of accounts is too big and all accounts are refused?
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220307 16:26 A new hitch: version of the golang. It is obvious that a new version may bear new functionality!
+So the thing is needed to be been controlling.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220309 09:44
+1. About version. Here is 1.15.5. So what? Under another version will be another binary. This is an advantage of compiled languages.
 `

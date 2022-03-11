@@ -2,13 +2,13 @@
 <html>
     <head>
         <title>MM</title>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name='freelancehunt' content='cc9a588ee5dcfce'>
         <link rel="stylesheet" href="/css">
         <script src="/mmsite_script"></script>
     </head>
 <body > 
 	<h4> <br>
-	<i> :::0.0-1-ge8a5e5d[branch_*main,commit_e8a5e5d]_220202_1607::: query num = {{.ReqNum}}</i><br>
+	<i> :::0.0-2-g562db44[branch_*main,commit_562db44]_220204_0533::: query num = {{.ReqNum}}</i><br>
 	<p> This button shows actual language and changes it.
 		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
 		There is not true supporting of different languages.<br>
@@ -18,26 +18,30 @@
 	</p>
 	</h4>
 <div id="maindiv">A purpose of this site is to serve as a resume; that is to give an info about the author to a potential employer.<br>
-    In other words, the author posites himself as a programmer and hopes that there is an employer which will hire him.<br>
+    In other words, the author posites himself as a IT expert and hopes that there is an employer which will hire him.<br>
     There is a wise man that said to me that this nonsense nobody will read. But what if?<br>
     <br>
     To contact the author you may send a letter. See form of <b>Letter</b> below.<br>
-    Also there are telephone for SMS:+79534737768.<br>
+    Also there are telephone for SMS (only):+79534737768.<br>
     <br>
     Beneath you may see referenses (in boxes circled by dots) that details the info<br>
 	Of cause, there are many other requests, that the backend recognized; but them are service and unlikely interesting<br>
+	
 	<div class="query">
 		<a href="/aboutAuthor"> Query /aboutAuthor - about author's career and his skills</a>
 	</div><br><!-- query /aboutAuthor -->
+	
 	<div class="query">
 		If somebody will want to see how this site has been creating then please here.<br>
 		<a href="/history"> Query /history - about the history of creating this site</a>
 		This page in main part for the author himself - to see quickly what and when has he done.<br>
 		But if you are curious - welcome.
-	</div><br><!-- query /aboutAuthor -->
+	</div><br><!-- query /history" -->
+	
 	<div class="query">
 		<a href="/accounts">/accounts</a>
 	</div><br><!-- query /aboutAuthor -->
+	
 <div id="formdiv">
 	Above there are references that allows you only reading.<br>
 	But below there are forms that give you some interaction.<br>
@@ -45,23 +49,22 @@
 
 	<div class="form">
 		<b>Letter</b><br>
-		Этот запрос пошлет письмо автору сайта и, одновременно, уведомляющее автора sms.<br>
-		Если там будет вопрос и адрес электронной почты, то автор постарается вам ответить<br>
-		Следует иметь в виду, что письмо будет обрезано, если в нем более 3000 букв, и что емкость хранилища писем 10<br>
-		То есть, есть вероятность, что ваше письмо будет потеряно<br>
+		Here you may sent a message to the author.<br>
+		It will be saved as a distinct file and with sending a notifying SMS to the work phone of author, that is constantly with him.<br>
+		If in the message will be a question (or a offer) with an email address the author will contact you.<br>
+		If there will be only a phone number the auther will not contact you through it.<br>
+		Due to the limited storage space for the massages there is probability of losing your message.<br>
+		Besides this, if your message has more then 3000 bytes it will be truncated.<br>
 	<form action="/letter" target="formres">
 		<textarea id="cont" name="cont" rows="4" cols="50">
 		</textarea><br>
-		<input type="submit" value="Submit">
+		<input type="submit" value="Send">
 	</form> 
 	</div><!-- form /sms -->
 
-
-
 </div><!-- formdiv -->
-<iframe id="formres" name="formres" width="100%" style="border:2px solid black;"></iframe>	
 
-</div><!-- id="maindiv" -->
+<iframe id="formres" name="formres" width="100%" style="border:2px solid black;"></iframe>	
 
 	
 </body>

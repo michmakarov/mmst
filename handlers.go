@@ -144,6 +144,10 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 	if err = templ.Execute(w, tD); err != nil {
 		panic(fmt.Sprintf("indHandler: executing %s err=%s", fileName, err.Error()))
 	}
+
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(200)
+
 	//if isDebug(serverMode) {
 	//	fmt.Printf("indHandler: RequestURI =%v, actualLang=%v\n", r.RequestURI, lang)
 	//}

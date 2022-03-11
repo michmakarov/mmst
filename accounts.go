@@ -4,9 +4,11 @@ package main
 import (
 	"container/list"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -15,7 +17,9 @@ type Account struct {
 	Name    string            // identificator
 	Tp      int               //type 0 - automatically created; the name is remote address; no password
 	Options map[string]string //options, sequence of substring of format key=value,for example lang=en somekey=somevalue ...
-	RegTm   time.Time         //Time of regidtrarion
+	//220303 07:30 the key and the value must be a valid utf-8, and must not contain runes that is <= 20
+	//220307 16:08 see func strToOpts(s string) (opts map[string]string , optsToStr(opts map[string]string) string , and func goodString(s string) (err error)
+	RegTm time.Time //Time of regidtrarion
 }
 
 var accounts *list.List
@@ -25,6 +29,7 @@ func init() {
 	if accounts == nil {
 		accounts = list.New()
 	}
+	restoreAccounts()
 }
 
 //220118 05:43 The func takes an account name and returns a pointer to an account if it exists or nil if not
@@ -124,4 +129,108 @@ func saveAccounts(accountsFileName string) {
 		line = fmt.Sprintf("%s;%s;at %s\n", account.Name, account.Options, account.RegTm.Format("20060102_150405"))
 		f.WriteString(line)
 	}
+}
+
+//220302 17:10
+//It saves accout list (accounts) as text file (see global var accountsFileName)
+//220308 09:51 Eche line of the file (without \n) represents an account in format:
+// <account name>;<account type>;<account options (see utils.optsToStr func)>;<time of registration>
+func saveAccountList() {
+	var f *os.File
+	var err error
+	var account *Account
+	var line string
+	if f, err = os.Create(accountsFileName); err != nil {
+		panic(fmt.Sprintf("saveAccounts: creating file %s err=%s", accountsFileName, err.Error()))
+	}
+
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		account = e.Value.(*Account)
+		line = fmt.Sprintf("%s;%d;%s;%s\n", account.Name, account.Tp, optsToStr(account.Options), account.RegTm.Format("20060102_150405"))
+		f.WriteString(line)
+	}
+}
+
+//220307 16:38
+//220308 08:56 It is presumed and checked that the file consist of lines that have format that is described for saveAccountList function.
+//220309 09:54
+//220310 16:46 there was a big fuss about reading file content. See further matter into Progects/golang/220310_rf
+func restoreAccounts() {
+	var f *os.File
+	var fi os.FileInfo
+	var err error
+	var buf []byte
+	var lines []string
+	var ac *Account
+	var acc int //220310 16:46 counter of restored accounts
+
+	if accounts.Len() != 0 {
+		panic("Illegal call of restoreAccounts function: it may be called when the accounts list is empty.")
+	}
+
+	if f, err = os.Open(accountsFileName); err != nil {
+		panic(fmt.Sprintf("restoreAccounts: opening file %s err=%s", accountsFileName, err.Error()))
+	}
+
+	if fi, err = f.Stat(); err != nil {
+		panic(fmt.Sprintf("restoreAccounts: getting info of %s; err=%s", accountsFileName, err.Error()))
+	}
+	if fi.Size() > int64(accountsFileMaxSize) {
+		WriteToLog(fmt.Sprintf("Size of %s is more than %d; accounts will be accounted newly", accountsFileName, accountsFileMaxSize))
+		return
+	}
+
+	//buf = make([]byte, accountsFileMaxSize)
+
+	//if content, err = os.ReadFile(accountsFileName); err != nil {
+	//	panic(fmt.Sprintf("restoreAccounts: reading content of file %s err=%s", accountsFileName, err.Error()))
+	//}
+
+	//if _, err = f.Read(buf); err != nil {
+	//	panic(fmt.Sprintf("restoreAccounts: reading content of file %s err=%s", accountsFileName, err.Error()))
+	//}
+
+	//if err = io.ReadFull(f); err != nil {
+	//	panic(fmt.Sprintf("restoreAccounts: reading content of file %s err=%s", accountsFileName, err.Error()))
+	//}
+
+	if buf, err = ioutil.ReadFile(accountsFileName); err != nil {
+		panic(fmt.Sprintf("restoreAccounts: reading content of file %s err=%s", accountsFileName, err.Error()))
+	} //else {
+	//		fmt.Printf("%s\n----------------\n", string(buf))
+	//	}
+
+	lines = strings.Split(string(buf), "\n")
+
+	for _, line := range lines {
+
+		if line == "" {
+			continue
+		} else {
+			acc++
+		}
+		ac = accountLineToAccount(line)
+		accounts.PushFront(ac)
+	}
+	fmt.Printf("restoreAccounts: %d accounts was successfully restored\n", acc)
+
+}
+
+//220309 10:42
+func accountLineToAccount(l string) (ac *Account) {
+	var acSl []string
+	acSl = strings.Split(l, ";")
+	if len(acSl) != 4 {
+		panic(fmt.Sprintf("accountLineToAccount: an account line must have 4 conponents, but there is line \"%s\"", l))
+	}
+	ac = new(Account)
+	ac.Name = checkAccontName(acSl[0])
+	ac.Tp = convAccontTp(acSl[1])
+	ac.Options = strToOpts(acSl[2])
+	ac.RegTm = convAccountTm(acSl[3])
+
+	return ac
 }

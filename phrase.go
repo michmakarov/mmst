@@ -18,4 +18,19 @@ ______07:44 earlier
 "This world, which is the same for all, no one of gods or men has made; but it was ever, is now,
 and ever shall be an ever-living Fire, with measures kindling and measures going out."
 ______08:36 I wonder what did Hegel do more than Greeks besides the verbiage?
++++++++++++++++++++++++++++++++++++++++++++++
+220205 08:45 https://mail.google.com/mail/u/0/#inbox/WhctKKXPdhnTkRSGvBTtGhxrkdcvWmBhpHzkXpjRsjvHBDRqNPkRBBZqwjVZfkGgvfDsCVV
+Prejudices, it is well known, are most difficult to eradicate from the heart whose soil has never been loosened or fertilized by education; 
+they grow firm there, firm as weeds among stones.
+_______ Charlotte Bronte
+
+At last time I clearly see that mans (at least) have already obtained their notions about other people before any reasoning about them.
+++++++++++++++++++++++++++++++++++++++++++++
+220212 10:16
+You may share the labours of the great, but you will not share the spoil.
+_______Aesop
+
+Silence is the virtue of fools.
+_______Francis Bacon
+
 `

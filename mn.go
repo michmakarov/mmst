@@ -19,7 +19,7 @@ import (
 	//_ "github.com/lib/pq"
 )
 
-const timeFormat = "20060102_15:04:05"
+const timeFormat = "20060102_150405"
 const maxLetters = 10
 const maxChars = 3000
 
@@ -48,6 +48,14 @@ var passWord string = "***not assigned yet***"
 //Those are default values. See func setArg()
 //var PG_CONN_STR = "postgres://kot_user:1qazXSW@@localhost:5433/mak_docker"
 var listeningAddr = "0.0.0.0:8080"
+
+//220302 17:19
+//220308 08:53
+var accountsFileName string = "accountList.txt"
+var accountsFileMaxSize = 10000 //bytes
+
+//220308 08:23
+var logFileName string = "log.txt"
 
 func main() {
 
@@ -122,6 +130,9 @@ func main() {
 
 	// Graceful Shutdown
 	waitForShutdown(srv)
+
+	//220302 16:58
+	saveAccounts("accoutList.txt")
 
 }
 
