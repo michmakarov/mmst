@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-var lf *os.File
-var logger *log.Logger
+var lf, sLf *os.File
+var logger, servLogger *log.Logger
 
 func init() {
 	var err error
@@ -18,8 +18,15 @@ func init() {
 	if lf, err = os.Create(logFileName); err != nil {
 		panic(fmt.Sprintf("Error of creating a log file=%s\n", err.Error()))
 	}
+	if sLf, err = os.Create(httpLogFileName); err != nil {
+		panic(fmt.Sprintf("Error of creating a HTTP (SERVER) log file=%s\n", err.Error()))
+	}
 	logger = log.New(lf, pref, log.Lshortfile)
+	servLogger = log.New(sLf, pref, log.Lshortfile)
 }
 func WriteToLog(msg string) {
 	logger.Output(2, msg)
+}
+func WriteToServLog(msg string) {
+	servLogger.Output(2, msg)
 }

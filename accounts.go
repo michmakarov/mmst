@@ -5,7 +5,8 @@ import (
 	"container/list"
 	"fmt"
 	"io/ioutil"
-	"net"
+
+	//"net"
 	"net/http"
 	"os"
 	"strings"
@@ -45,13 +46,25 @@ func getAccount(accName string) *Account {
 }
 
 //220118 17:12
+//220325 05:48 Now a remote address is not an account name; see var accountName in feeler.go ((f *feeler) ServeHTTP)
+//It is like the getOptions function. For the good in both must be used func getAccount2(r *http.Request) that panics if there is not an account
 func accountName(r *http.Request) string {
 	var accName string
-	var err error
-	if accName, _, err = net.SplitHostPort(r.RemoteAddr); err != nil {
-		panic(fmt.Sprintf("accccountName: net.SplitHostPort err=%s", err.Error()))
+	var accRes byte
+	if accName, accRes = getCookieVal(r); accRes != 0 {
+		panic(fmt.Sprintf("getOptions (accaouts.go): getting cookie value problem, accRes=%d", accRes))
 	}
-	return accName
+	if getAccount(accName) == nil {
+		panic(fmt.Sprintf("getOptions (accaouts.go): no such account %s", accName))
+	}
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		if e.Value.(*Account).Name == accName {
+			return e.Value.(*Account).Name
+		}
+	}
+	panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
 }
 
 //220118 16:22 The func panics if opts==nil
@@ -71,11 +84,19 @@ func setOptions(accName string, opts map[string]string) {
 
 //220118 15:04 The func returns options related a given request.
 //If the request is not correspond some account the func panics.
+//func getOptions(r *http.Request) map[string]string {
+//220325 07:57 Now the accName is retrieved from the r through the getCookieVal func (cookie. go)
 func getOptions(r *http.Request) map[string]string {
-	var err error
 	var accName string
-	if accName, _, err = net.SplitHostPort(r.RemoteAddr); err != nil {
-		panic(fmt.Sprintf("getCurrOptions: net.SplitHostPort err=%s", err.Error()))
+	var accRes byte
+	//if accName, _, err = net.SplitHostPort(r.RemoteAddr); err != nil {
+	//	panic(fmt.Sprintf("getCurrOptions: net.SplitHostPort err=%s", err.Error()))
+	//}
+	if accName, accRes = getCookieVal(r); accRes != 0 {
+		panic(fmt.Sprintf("getOptions (accaouts.go): getting cookie value problem, accRes=%d", accRes))
+	}
+	if getAccount(accName) == nil {
+		panic(fmt.Sprintf("getOptions (accaouts.go): no such account %s", accName))
 	}
 	accountsMtx.Lock()
 	defer accountsMtx.Unlock()
@@ -98,14 +119,18 @@ func getLang(r *http.Request) string {
 }
 
 //220118 05:32 It creates an account of only type 0
-func regAccount(r *http.Request) {
-	var accName string = accountName(r)
-	if getAccount(accName) != nil {
+//220325 07:34 It creates a new account if there is not one with given name aN
+//It take a remote address (RA) and an user agent (UA) as options
+func regAccount(aN string, r *http.Request) {
+	//var accName string = accountName(r)
+	if getAccount(aN) != nil {
 		return
 	} else {
 		var opts = make(map[string]string)
 		opts["lang"] = "ru"
-		var newAcc = &Account{accName, 0, opts, time.Now()}
+		opts["RA"] = r.RemoteAddr
+		opts["UA"] = r.UserAgent()
+		var newAcc = &Account{aN, 0, opts, time.Now()}
 		accountsMtx.Lock()
 		defer accountsMtx.Unlock()
 		accounts.PushFront(newAcc)
@@ -233,4 +258,17 @@ func accountLineToAccount(l string) (ac *Account) {
 	ac.RegTm = convAccountTm(acSl[3])
 
 	return ac
+}
+
+//220325 09:12 The func removes the corresponding account if it exists
+func delAccount(accName string) {
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		if e.Value.(*Account).Name == accName {
+			accounts.Remove(e)
+			return
+		}
+	}
+	return
 }

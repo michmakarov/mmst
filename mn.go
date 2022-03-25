@@ -55,7 +55,10 @@ var accountsFileName string = "accountList.txt"
 var accountsFileMaxSize = 10000 //bytes
 
 //220308 08:23
-var logFileName string = "log.txt"
+var logFileName string = "general.log"
+
+//220311 15:00
+var httpLogFileName string = "http.log"
 
 func main() {
 
@@ -87,6 +90,7 @@ func main() {
 		Addr:         listeningAddr,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
+		ErrorLog:     servLogger,
 	}
 
 	srv.RegisterOnShutdown(onShutDown)

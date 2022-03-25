@@ -113,4 +113,17 @@ So the thing is needed to be been controlling.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 220309 09:44
 1. About version. Here is 1.15.5. So what? Under another version will be another binary. This is an advantage of compiled languages.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220311 09:10
+1. the current accounting is unfit: the list of accounts is big and therefore hard to control. Why? For example the NAT.
+It as it is seemed must give many fictitious accounts. So identifying an account by IP address is a bad idea. But what identify by?
+It is come up that the contragent need be tagged by some tag, a cookie is very fit.
+2. Why is so big the nohup.out? I think that errors of the system server need out to distinct log file.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220322 05:53 The accounting will be improved. Let's this decision have its own name : 220322-account
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220323 04:16 As if I decide to resolve the 220322-account task too early:
+I am not sure that a nance may be the same for all clients (https://pkg.go.dev/crypto/cipher#AEAD)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220325 07:07 All manipulations with accounts should be in the func (f *feeler) ServeHTTP
 `
