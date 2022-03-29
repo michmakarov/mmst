@@ -48,11 +48,16 @@ func getAccount(accName string) *Account {
 //220118 17:12
 //220325 05:48 Now a remote address is not an account name; see var accountName in feeler.go ((f *feeler) ServeHTTP)
 //It is like the getOptions function. For the good in both must be used func getAccount2(r *http.Request) that panics if there is not an account
+//220328 09:37 For what is this function at all?
+//_______09:41 It is used in many spots. So there is a need th improve it.
+//Let it return "?" if there is any problem with getting the account name from the cookie
+//and "???" if from the cookie was obtained a valid name but it is not in the registration list.
 func accountName(r *http.Request) string {
 	var accName string
 	var accRes byte
 	if accName, accRes = getCookieVal(r); accRes != 0 {
-		panic(fmt.Sprintf("getOptions (accaouts.go): getting cookie value problem, accRes=%d", accRes))
+		//panic(fmt.Sprintf("getOptions (accaouts.go): getting cookie value problem, accRes=%d", accRes))
+		return "?"
 	}
 	if getAccount(accName) == nil {
 		panic(fmt.Sprintf("getOptions (accaouts.go): no such account %s", accName))
@@ -64,7 +69,8 @@ func accountName(r *http.Request) string {
 			return e.Value.(*Account).Name
 		}
 	}
-	panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
+	//panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
+	return "???"
 }
 
 //220118 16:22 The func panics if opts==nil
@@ -86,6 +92,7 @@ func setOptions(accName string, opts map[string]string) {
 //If the request is not correspond some account the func panics.
 //func getOptions(r *http.Request) map[string]string {
 //220325 07:57 Now the accName is retrieved from the r through the getCookieVal func (cookie. go)
+//220328 10:27 instead panicing it now return nil
 func getOptions(r *http.Request) map[string]string {
 	var accName string
 	var accRes byte
@@ -93,7 +100,8 @@ func getOptions(r *http.Request) map[string]string {
 	//	panic(fmt.Sprintf("getCurrOptions: net.SplitHostPort err=%s", err.Error()))
 	//}
 	if accName, accRes = getCookieVal(r); accRes != 0 {
-		panic(fmt.Sprintf("getOptions (accaouts.go): getting cookie value problem, accRes=%d", accRes))
+		//anic(fmt.Sprintf("getOptions (accaouts.go): getting cookie value problem, accRes=%d", accRes))
+		return nil
 	}
 	if getAccount(accName) == nil {
 		panic(fmt.Sprintf("getOptions (accaouts.go): no such account %s", accName))
@@ -105,7 +113,8 @@ func getOptions(r *http.Request) map[string]string {
 			return e.Value.(*Account).Options
 		}
 	}
-	panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
+	//panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
+	return nil
 }
 
 //220118 15:39 The func returns  a language name of a given request.
@@ -134,6 +143,7 @@ func regAccount(aN string, r *http.Request) {
 		accountsMtx.Lock()
 		defer accountsMtx.Unlock()
 		accounts.PushFront(newAcc)
+		WriteToLog(fmt.Sprintf("Accont (new) name=%s", aN))
 	}
 }
 

@@ -13,6 +13,7 @@ import (
 	"crypto/sha256"
 	"hash"
 
+	"encoding/hex"
 	"fmt"
 	"math/rand"
 	//"os"
@@ -41,28 +42,56 @@ func init() {
 		panic(fmt.Sprintf("init (cookie.go):rand.Reader(iv) err=%s", err.Error()))
 	}
 	mac = hmac.New(sha256.New, key)
+	//fmt.Printf("------------------cookie.go init macsize=%d; blockSize=%d", mac.Size(), blocksize)
 }
 
+//220329 04:11 before returning it turns the binary text to alphabetical one
 func encrypt(plainText []byte) (cipherText []byte) {
-	var plainTextMAC []byte = mac.Sum(nil)
+	var abCipherText []byte // the alphabetical form of the cipherText
+	var plainTextMAC []byte
+
+	mac.Reset()
 	mac.Write(plainText)
 	plainTextMAC = mac.Sum(nil)
+
 	stream := cipher.NewCFBEncrypter(block, iv)
 	plainText = append(plainText, plainTextMAC...)
 	cipherText = plainText
 	stream.XORKeyStream(cipherText, plainText)
+
+	abCipherText = make([]byte, hex.EncodedLen(len(cipherText)))
+	hex.Encode(abCipherText, cipherText)
+	cipherText = abCipherText
 	return
 }
 
-func decrypt(cipherText []byte) (pT []byte, err error) {
+//220329 04:25 as first step it decodes the given text from alphabetical form to binary one
+func decrypt(abCipherText []byte) (pT []byte, err error) {
+	var cipherText []byte //in binary form
 	var MAC1, MAC2 []byte
 	var indMAC int // The index where first byte of the MAC is in decrypted cipherText
 
+	cipherText = make([]byte, hex.DecodedLen(len(abCipherText)))
+	if _, err = hex.Decode(cipherText, abCipherText); err != nil {
+		pT = nil
+		err = fmt.Errorf("decrypt(cookie.go): decoding into binary err=%s", err.Error())
+		return
+
+	}
 	stream := cipher.NewCFBDecrypter(block, iv)
+
+	if (len(cipherText) - mac.Size()) < 0 {
+		pT = nil
+		err = fmt.Errorf("decrypt(cookie.go): bad length of cipherText(%d)(mac.Size=%d)", len(cipherText), mac.Size())
+		return
+	}
 
 	// XORKeyStream can work in-place if the two arguments are the same.
 	stream.XORKeyStream(cipherText, cipherText)
 	indMAC = len(cipherText) - mac.Size()
+	if isDebug(serverMode) {
+		fmt.Printf("-----------------------decrypt: indMAC=%d; len(cipherText)=%d;  mac.Size()=%d\n", indMAC, len(cipherText), mac.Size())
+	}
 	MAC1 = cipherText[indMAC:]
 	pT = cipherText[:indMAC]
 	mac.Reset()
@@ -107,7 +136,7 @@ func setCookie(w http.ResponseWriter) (accountName string) {
 	var err error
 	var buff []byte = make([]byte, 8)
 	var cookieVal []byte
-	var cookie *http.Cookie
+	var cookie http.Cookie
 	if _, err = crand.Read(buff); err != nil {
 		panic(fmt.Sprintf("setCookie: crand.Read(buff) err=%s", err.Error()))
 	}
@@ -117,7 +146,7 @@ func setCookie(w http.ResponseWriter) (accountName string) {
 	cookie.Value = string(cookieVal)
 	cookie.Path = "/"
 
-	http.SetCookie(w, cookie)
+	http.SetCookie(w, &cookie)
 
 	accountName = string(buff)
 	return

@@ -8,3 +8,14 @@ The effect of an argument depends on its nature and describes further.
 ARGUMENTS:
 h - it must be first
 `
+var noCookieMess = `
+<h2> No registration error</h2>
+<p>For having asscees to the site you have to obtain a cookie.
+For this you should give a special request: <a href="/registerme"> registration </a>
+</p>
+`
+var CookieIs = `
+<h2> You have been registered</h2>
+<p>Now you may do any request
+</p>
+`
