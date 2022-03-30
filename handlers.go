@@ -341,3 +341,11 @@ func letterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write([]byte(msgLet))
 }
+
+//220330 09:16
+//func registraterHandler(w http.ResponseWriter, r *http.Request) {
+//	var err error
+//	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+//	w.WriteHeader(200)
+//	w.Write([]byte(msgLet))
+//}

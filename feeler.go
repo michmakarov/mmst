@@ -67,16 +67,26 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	atomic.AddInt64(&f.feelerCount, 1)
-	accName, accRes = getCookieVal(r)
+
+	{ //220330 12:03 deleting expired eccounts
+		var accs = delExpiredAccounts()
+		if len(accs) != 0 {
+			var msg = fmt.Sprintf("deleting expired %v", accs)
+			WriteToLog(msg)
+		}
+
+	}
+
+	accName, accRes = getAccount2(r) //getCookieVal(r)
 
 	logMess = fmt.Sprintf("%s:%d--ACC=%s--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.feelerCount, accName, r.RequestURI, r.RemoteAddr)
 	f.WriteFLog(logMess) // (220322-account : confirmation) The feeler log fixes all incoming requests.
 	if isDebug(serverMode) {
-		fmt.Printf("--feeler: RA=%s; URI=%s; account=%s\n", r.RemoteAddr, r.RequestURI, accName)
+		fmt.Println(logMess)
 	}
 
 	if r.URL.Path == "/q" {
-		s = fmt.Sprintf("There is /q request; account name=%s; accres=%d", accName, accRes)
+		s = fmt.Sprintf("There is /q debug request; accName=%s; accres=%d", accName, accRes)
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(200)
 		w.Write([]byte(s))
@@ -86,38 +96,23 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path == "/registerme" { //220329
 		if accRes == 0 { // a repeated request for registration
+			prolongeAccount(accName)
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(200)
-			w.Write([]byte(CookieIs))
+			w.Write([]byte(CookieIsStill))
 			return
-			//goto toMultiplexer
-		} else { //There is possibility that there is an appropriate account. It must be deleted with creating a new one
-			if accRes == 2 {
-				delAccount(accName)
-			} // be removed if exists
+		} else {
 			accName = setCookie(w)
 			regAccount(accName, r)
-			WriteToLog(fmt.Sprintf("%s was removed (maybe, err %d) and %s was registered", accName, accRes, accountName(r)))
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(200)
 			w.Write([]byte(CookieIs))
 			return
-			//goto toMultiplexer
 		}
 	} else {
-		if accRes == 0 { //220329 09:03 !!! there is a valid cookie;
-			if getAccount(accName) != nil { // 220329 09:11 there is an account; all Ok
-				goto toMultiplexer
-			} else {
-				//panic(fmt.Sprintf("There is a valid cookie but a no respective account; value(account name)=%s", accName))
-				s = fmt.Sprintf("There is a valid cookie but a no respective account; value(account name)=%s", accName)
-				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-				w.WriteHeader(200)
-				w.Write([]byte(s))
-				fmt.Println(s)
-				return
-			}
+		if accRes == 0 { //220330 15:56 there is an account; all Ok
+			goto toMultiplexer
 		} else { //the 400  will be passed to the client
-			//var msg string
-			//msg = fmt.Sprintf("")
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(400)
 			w.Write([]byte(noCookieMess))

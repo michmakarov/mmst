@@ -126,4 +126,8 @@ It is come up that the contragent need be tagged by some tag, a cookie is very f
 I am not sure that a nance may be the same for all clients (https://pkg.go.dev/crypto/cipher#AEAD)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 220325 07:07 All manipulations with accounts should be in the func (f *feeler) ServeHTTP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220330 08:44 About the 220322-account
+1. A client may or may not support cookies. This needs to be checked
+2. I firmly think that the site is not very important. So the "math/rand" is enough for (with a pecular seed) generating random byte sequences
 `

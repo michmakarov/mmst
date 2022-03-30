@@ -9,21 +9,22 @@ import (
 	"crypto/hmac"
 	"net/http"
 
-	crand "crypto/rand"
+	//crand "crypto/rand"
 	"crypto/sha256"
 	"hash"
 
 	"encoding/hex"
 	"fmt"
 	"math/rand"
+
 	//"os"
-	//"time"
+	"time"
 )
 
 const cookieName = "mmstSession"
 
 //------ Global variables that are established by the init function
-var key = []byte("12345678901234567890123456789012")
+var key []byte //("12345678901234567890123456789012")
 var block cipher.Block
 var blockSize int
 var iv []byte
@@ -33,9 +34,16 @@ var mac hash.Hash
 
 func init() {
 	var err error
+	rand.Seed(time.Now().UnixNano())
+
+	key = make([]byte, 32)
+	if _, err := rand.Read(key); err != nil {
+		panic(fmt.Sprintf("init (cookie.go): rand.Reader(key) err=%s", err.Error()))
+	}
 	if block, err = aes.NewCipher(key); err != nil {
 		panic(fmt.Sprintf("aes.NewCipher(key) err=%s", err.Error()))
 	}
+
 	blockSize = block.BlockSize()
 	iv = make([]byte, blockSize)
 	if _, err := rand.Read(iv); err != nil {
@@ -89,9 +97,9 @@ func decrypt(abCipherText []byte) (pT []byte, err error) {
 	// XORKeyStream can work in-place if the two arguments are the same.
 	stream.XORKeyStream(cipherText, cipherText)
 	indMAC = len(cipherText) - mac.Size()
-	if isDebug(serverMode) {
-		fmt.Printf("-----------------------decrypt: indMAC=%d; len(cipherText)=%d;  mac.Size()=%d\n", indMAC, len(cipherText), mac.Size())
-	}
+	//if isDebug(serverMode) {
+	//	fmt.Printf("-----------------------decrypt: indMAC=%d; len(cipherText)=%d;  mac.Size()=%d\n", indMAC, len(cipherText), mac.Size())
+	//}
 	MAC1 = cipherText[indMAC:]
 	pT = cipherText[:indMAC]
 	mac.Reset()
@@ -137,7 +145,7 @@ func setCookie(w http.ResponseWriter) (accountName string) {
 	var buff []byte = make([]byte, 8)
 	var cookieVal []byte
 	var cookie http.Cookie
-	if _, err = crand.Read(buff); err != nil {
+	if _, err = rand.Read(buff); err != nil {
 		panic(fmt.Sprintf("setCookie: crand.Read(buff) err=%s", err.Error()))
 	}
 	cookieVal = encrypt(buff)

@@ -14,9 +14,12 @@ import (
 	"time"
 )
 
+var accountTerm, _ = time.ParseDuration("720h") //~ 1 month
+
 type Account struct {
-	Name    string            // identificator
-	Tp      int               //type 0 - automatically created; the name is remote address; no password
+	Name string // identificator
+	Tp   int    //type 0 - automatically created; the name is remote address; no password
+	//type 1 - since 220330 11:32
 	Options map[string]string //options, sequence of substring of format key=value,for example lang=en somekey=somevalue ...
 	//220303 07:30 the key and the value must be a valid utf-8, and must not contain runes that is <= 20
 	//220307 16:08 see func strToOpts(s string) (opts map[string]string , optsToStr(opts map[string]string) string , and func goodString(s string) (err error)
@@ -43,6 +46,22 @@ func getAccount(accName string) *Account {
 		}
 	}
 	return nil
+}
+
+//220330 12:52
+//220330 15:02 It expands the functionallity of the getCookieVal
+func getAccount2(r *http.Request) (mess string, res byte) {
+	var acc *Account
+	mess, res = getCookieVal(r)
+	if res != 0 {
+		return
+	}
+	acc = getAccount(mess)
+	if acc == nil {
+		res = 3
+		mess = fmt.Sprintf("getAccount: from %s was a valid cookie (val = %s) but an account absences", r.RemoteAddr, mess)
+	}
+	return
 }
 
 //220118 17:12
@@ -139,7 +158,7 @@ func regAccount(aN string, r *http.Request) {
 		opts["lang"] = "ru"
 		opts["RA"] = r.RemoteAddr
 		opts["UA"] = r.UserAgent()
-		var newAcc = &Account{aN, 0, opts, time.Now()}
+		var newAcc = &Account{aN, 1, opts, time.Now()}
 		accountsMtx.Lock()
 		defer accountsMtx.Unlock()
 		accounts.PushFront(newAcc)
@@ -271,14 +290,40 @@ func accountLineToAccount(l string) (ac *Account) {
 }
 
 //220325 09:12 The func removes the corresponding account if it exists
-func delAccount(accName string) {
+//220330 09:36 It returns true if some accound was deleted
+func delAccount(accName string) bool {
 	accountsMtx.Lock()
 	defer accountsMtx.Unlock()
 	for e := accounts.Front(); e != nil; e = e.Next() {
 		if e.Value.(*Account).Name == accName {
 			accounts.Remove(e)
-			return
+			return true
+		}
+	}
+	return false
+}
+
+//220330 10:34
+func delExpiredAccounts() (accs []string) {
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		if time.Since(e.Value.(*Account).RegTm) >= accountTerm {
+			accounts.Remove(e)
+			accs = append(accs, e.Value.(*Account).Name)
 		}
 	}
 	return
+}
+
+//220330 15:43 It sets the date registration to now if it found an account
+func prolongeAccount(accName string) {
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		if e.Value.(*Account).Name == accName {
+			e.Value.(*Account).RegTm = time.Now()
+		}
+	}
+
 }
