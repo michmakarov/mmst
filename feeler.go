@@ -2,13 +2,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 
-	//"runtime/debug"
+	"runtime/debug"
+	"strconv"
 	"sync/atomic"
 	"time"
+)
+
+//220331 08:39 CtxParType is the type of context parameters which assigning to incoming requests
+type ctxParType string
+
+const (
+	//Next keys are established by func (f *feeler) ServeHTTP
+	AccNameCtxKey ctxParType = "AccName"
+	ReqNumCtxKey  ctxParType = "RecNum"
+	URLCtxKey     ctxParType = "URL"
 )
 
 type feeler struct {
@@ -61,8 +73,9 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(msg))
 			time.Sleep(time.Second)
 			if isDebug(serverMode) {
-				//fmt.Println(string(debug.Stack()))
-				fmt.Printf("++++++++++++++++++++++++%s", msg)
+				fmt.Printf("++++++++++++++++++++++++%s\n", msg)
+				fmt.Println(string(debug.Stack()))
+				fmt.Printf("++++++++++++++++++++++++\n")
 			}
 		}
 	}()
@@ -79,7 +92,7 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	accName, accRes = getAccount2(r) //getCookieVal(r)
 
-	logMess = fmt.Sprintf("%s:%d--ACC=%s--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.feelerCount, accName, r.RequestURI, r.RemoteAddr)
+	logMess = fmt.Sprintf("%s:%d--ACC=%s--URI=%s--RA=%s", time.Now().Format("20060102_150405"), f.feelerCount, accName, r.RequestURI, r.RemoteAddr)
 	f.WriteFLog(logMess) // (220322-account : confirmation) The feeler log fixes all incoming requests.
 	if isDebug(serverMode) {
 		fmt.Println(logMess)
@@ -103,7 +116,7 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			accName = setCookie(w)
-			regAccount(accName, r)
+			regAccount([]byte(accName), r)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(200)
 			w.Write([]byte(CookieIs))
@@ -121,5 +134,19 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 toMultiplexer:
+	{ //220331 09:19
+		var ctx context.Context
+
+		r = r.WithContext(context.WithValue(r.Context(), ReqNumCtxKey, strconv.FormatInt(f.feelerCount, 10)))
+		if accRes != 0 {
+			r = r.WithContext(context.WithValue(r.Context(), AccNameCtxKey, "?"))
+		} else {
+			r = r.WithContext(context.WithValue(r.Context(), AccNameCtxKey, accName))
+		}
+		r = r.WithContext(context.WithValue(r.Context(), URLCtxKey, r.RequestURI)) //190408
+		ctx, _ = context.WithCancel(r.Context())
+		r = r.WithContext(ctx)
+	}
+
 	f.h.ServeHTTP(w, r)
 }

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"runtime"
 	"sort"
 	"strconv"
@@ -208,6 +209,7 @@ func truncLetDir() {
 
 //220302 17:30 for saveAccountList (accounts.go)
 //220307 07:37 An example of result: "lang=en qqq=", that is the qqq key is empty.
+//220404 09:38 see var accountCompsSpr(="-;;-") var optionsSpr(=";--;") var optionKVspr(=";==;")
 func optsToStr(opts map[string]string) string {
 	var res string
 	var err error
@@ -232,7 +234,7 @@ func optsToStr(opts map[string]string) string {
 		if keyCount == 1 {
 			fmt.Sprintf("%s=%s", key, val)
 		} else {
-			res = res + " " + fmt.Sprintf("%s=%s", key, val)
+			res = res + optionsSpr + fmt.Sprintf("%s%s%s", key, optionKVspr, val)
 		}
 	}
 	return res
@@ -264,6 +266,7 @@ func goodString(s string) (err error) {
 
 //220307 07:33 for saveAccountList (accounts.go)
 //220310 11:27
+//220404 09:46 see var accountCompsSpr(="-;;-") var optionsSpr=(";--;")
 func strToOpts(s string) (opts map[string]string) {
 	var optsSlice, optSlice []string
 
@@ -272,15 +275,18 @@ func strToOpts(s string) (opts map[string]string) {
 	}
 
 	opts = make(map[string]string)
-	optsSlice = strings.Fields(s)
-	for _, keyVal := range optsSlice {
-		optSlice = strings.Split(keyVal, "=")
-		if len(optSlice) > 2 {
-			panic(fmt.Sprintf("Bad record of option(%s): more than one equation mark", keyVal))
+	optsSlice = strings.Split(s, optionsSpr)
+	fmt.Printf("-----utils.go>strToOpts: optsSlice=%v\n", optsSlice)
+	if len(optsSlice) < minOptions {
+		panic(fmt.Sprintf("Bad record of option(%s): not enough options, minOptions=%d", minOptions))
+	}
+	for ind, keyVal := range optsSlice {
+		optSlice = strings.Split(keyVal, optionKVspr)
+		if len(optSlice) != 2 { //220307 11:08 - it is a need to check that splitting "qqq=" gives a slice with two components
+			//220404 10:52 the optSlice must contain exactly two components
+			panic(fmt.Sprintf("Bad record of option(%s)(index%d): no two componenct (key and value)(optionKVspr=%s)", keyVal, ind, optionKVspr))
 		}
-		if len(optSlice) == 1 { //220307 11:08 - it is a need to check that splitting "qqq=" gives a slice with two components
-			panic(fmt.Sprintf("Bad record of option(%s): no equation mark", keyVal))
-		}
+		fmt.Printf("----utils.go>strToOpts: optSlice=%v\n", optSlice)
 		opts[optSlice[0]] = optSlice[1]
 	}
 	return opts
@@ -295,15 +301,16 @@ func checkAccontName(n string) string {
 }
 
 //220309 10:52 it panics if tp is not represent a valid account.Tp
+//220404 14:16
 func convAccontTp(tp string) (res int) {
 	var err error
 	if res, err = strconv.Atoi(tp); err != nil {
 		panic(fmt.Sprintf("convAccontTp: %s is not a valid integer", tp))
 	}
 
-	if res != 0 {
-		panic(fmt.Sprintf("convAccontTp: only 0 is allowed but there is %d", res))
-	}
+	//if res != 0 {
+	//	panic(fmt.Sprintf("convAccontTp: only 0 is allowed but there is %d", res))
+	//}
 
 	return res
 }
@@ -315,4 +322,34 @@ func convAccountTm(tm string) (res time.Time) {
 		panic(fmt.Sprintf("convAccontTm: conversion %s err=%s", tm, err.Error()))
 	}
 	return res
+}
+
+func printDebug(msg string) {
+	if !isDebug(serverMode) {
+		return
+	}
+	fmt.Printf("DDDD-----%s\n", msg)
+}
+
+//22030404 07:25
+func removeOldLogs() error {
+	var cmd = exec.Command("rm", "*.log")
+	return cmd.Run()
+}
+
+//220404 11:53
+func byteSliceToStrRepresentation(bs []byte) (res string) {
+	res = fmt.Sprintf("%v", bs)
+	return
+}
+
+//220404 13:00
+//It is the inverse of byteSliceToStrRepresentation
+//That is it expects s as "[1 2 3 4 ...]"
+func byteStrRepresentationToByteSlice(s string) (res []byte) {
+	for _, member := range []byte(s) {
+		res = append(res, member)
+	}
+
+	return
 }

@@ -22,11 +22,11 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(history))
 }
 
-//220118 07:31
+//220118 07:31 220331 11:54
 func accountsHandler(w http.ResponseWriter, r *http.Request) {
-	var accountsFileName = "Accounts" + time.Now().Format("20060102_150405") + ".log"
-	saveAccounts(accountsFileName)
-	http.ServeFile(w, r, accountsFileName)
+	//var accountsFileName = "Accounts" + time.Now().Format("20060102_150405") + ".log"
+	//saveAccounts(accountsFileName)
+	//http.ServeFile(w, r, accountsFileName)
 }
 
 //220113 04:43 Only sense of this to resolve the enigma of e_2 (see the history of 220113 04:17)
@@ -84,6 +84,7 @@ func changeLangHandler(w http.ResponseWriter, r *http.Request) {
 	var newLang string = r.URL.RawQuery
 	var msg string
 	var opts map[string]string
+	//var accName string
 	if newLang == "" {
 		msg = fmt.Sprintf("changeLangHandler: RequestURI =%v, error: no language to change", r.RequestURI)
 		w.WriteHeader(400)
@@ -98,7 +99,7 @@ func changeLangHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	opts = getOptions(r)
 	opts["lang"] = newLang
-	setOptions(accountName(r), opts)
+	setOptions([]byte(accountName(r)), opts)
 	msg = fmt.Sprintf("%s", newLang)
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
@@ -349,3 +350,25 @@ func letterHandler(w http.ResponseWriter, r *http.Request) {
 //	w.WriteHeader(200)
 //	w.Write([]byte(msgLet))
 //}
+
+//220331 08:12
+func myAccountHandler(w http.ResponseWriter, r *http.Request) {
+	//var err error
+	var msg, opts string
+	var acc *Account
+	var accName = r.Context().Value(AccNameCtxKey).(string)
+	if accName == "?" {
+		panic("myAccountHandler: no account name")
+	}
+	if acc = getAccount([]byte(accName)); acc == nil {
+		panic(fmt.Sprintf("myAccountHandler: no account of name %s", accName))
+	}
+	msg = fmt.Sprintf("<h2>Accunt %v or(in hex coding)\"%x\" </h2>", []byte(accName), accName)
+	for key, val := range acc.Options {
+		opts = opts + fmt.Sprintf("<p>%s=%s</p>", key, val)
+	}
+	msg = msg + opts + "<p>-------------------------------</p>"
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(200)
+	w.Write([]byte(msg))
+}

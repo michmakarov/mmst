@@ -134,6 +134,7 @@ func getCookieVal(r *http.Request) (mess string, res byte) {
 		return
 	}
 	mess = string(buff)
+	printDebug(fmt.Sprintf("cookie.go>getCookieVal (or account name): mess=%v", buff))
 	return
 }
 

@@ -43,7 +43,7 @@ var serverMode int
 var flr *feeler //220108 08:22
 
 //var lang string = "ru"
-var passWord string = "***not assigned yet***"
+var passWord string // = "***not assigned yet***" 220331 12:04 empty passWord is a bad password
 
 //Those are default values. See func setArg()
 //var PG_CONN_STR = "postgres://kot_user:1qazXSW@@localhost:5433/mak_docker"
@@ -62,6 +62,11 @@ var httpLogFileName string = "http.log"
 
 func main() {
 
+	if err := removeOldLogs(); err != nil {
+		fmt.Printf("Removing old logs err=%s\n", err.Error())
+	} else {
+		fmt.Printf("Old logs were successfully removed\n")
+	}
 	setArgs()
 
 	mx := http.DefaultServeMux
@@ -81,6 +86,8 @@ func main() {
 	mx.HandleFunc("/sms", smsHandler)
 	mx.HandleFunc("/letter", letterHandler)
 	mx.HandleFunc("/css", cssHandler)
+
+	mx.HandleFunc("/myAccount", myAccountHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 
@@ -136,7 +143,7 @@ func main() {
 	waitForShutdown(srv)
 
 	//220302 16:58
-	saveAccounts("accoutList.txt")
+	//saveAccounts("accoutList.txt")
 
 }
 

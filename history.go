@@ -130,4 +130,13 @@ I am not sure that a nance may be the same for all clients (https://pkg.go.dev/c
 220330 08:44 About the 220322-account
 1. A client may or may not support cookies. This needs to be checked
 2. I firmly think that the site is not very important. So the "math/rand" is enough for (with a pecular seed) generating random byte sequences
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220331 08:14 myAccountHandler
+As if to do decryption for any want of a account name is not decently. So the name must be passed through a context.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220401 11:11 1. removing old logs
+2. About password: I firmly think that if some  malperson has access to the cloud that person may do all if he would want it
+_______13:29 The very old question: Is it need to ensure successive access if a process only reading the data?
+let's say that to overfart is better than underfart
+
 `
