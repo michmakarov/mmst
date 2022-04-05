@@ -35,11 +35,7 @@
 		Если есть желание посмотреть как этот сайт делался, то сюда.<br>
 		Зачем? Вдруг, как я уже говорил, кто-то заинтересуетя моей персоной. Тогда здесь исключительно фактический материал, который сквжет все опытному в ИТ области.<br>
 		<a href="/history"> Запрос /history</a>
-	</div><br><!-- query /aboutAuthor -->
-	<div class="query">
-		Покажет, кто и когда (was first enter when) заходил на свйт<br>
-		<a href="/accounts">/accounts</a>
-	</div><br><!-- query /aboutAuthor -->
+	</div><br><!-- query /history" -->
 	<div class="query">
 		Покажет Ваш аккаунт<br>
 		<a href="/myAccount">/myAaccount</a>
@@ -73,13 +69,21 @@
 
 	<div class="form">
 		<b>Letter</b><br>
-		Этот запрос пошлет письмо автору сайта и, одновременно, уведомляющее автора sms.<br>
+		Этот запрос пошлет письмо автору сайта и, одновременно, если сервер работает в соответствующем режиме, уведомляющее автора sms.<br>
 		Если там будет вопрос и адрес электронной почты, то автор постарается вам ответить<br>
 		Следует иметь в виду, что письмо будет обрезано, если в нем более 3000 букв, и что емкость хранилища писем ограничено.<br>
-		То есть, есть вероятность, что ваше письмо будет потеряно<br>
+		То есть, есть малая вероятность, что ваше письмо будет потеряно<br>
 	<form action="/letter" target="formres">
 		<textarea id="cont" name="cont" rows="4" cols="50">
 		</textarea><br>
+		<input type="submit" value="Submit">
+	</form> 
+
+	<div class="form">
+		<b>Accounts</b><br>
+		This shows the list of actual acounts on the site if you give a valid password.
+	<form action="/accounts" target="formres">
+		Password:<input type="text" name="pw" value="none"><br>
 		<input type="submit" value="Submit">
 	</form> 
 	</div><!-- form /sms -->

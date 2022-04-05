@@ -31,13 +31,14 @@ var accountTerm, _ = time.ParseDuration("720h") //~ 1 month
 var accountCompsSpr = "-;;-"
 var optionsSpr = ";--;"
 var optionKVspr = ";==;"
-var minOptions = 3
+var minOptions = 4
 
 func init() {
 	if accounts == nil {
 		accounts = list.New()
 	}
-	restoreAccounts()
+	//restoreAccounts()//220405 09:19
+
 }
 
 //220118 05:43 The func takes an account name and returns a pointer to an account if it exists or nil if not
@@ -84,12 +85,30 @@ func accountName(r *http.Request) string {
 	var accName string
 	accName = (r.Context().Value(AccNameCtxKey)).(string)
 	if accName == "" {
-		panic(fmt.Sprintf("getOptions (accaouts.go):  the request gives an empty accName"))
+		panic(fmt.Sprintf("accountName (accaouts.go):  the request gives an empty accName"))
 	}
 	if accName == "?" {
-		panic(fmt.Sprintf("getOptions (accaouts.go):  the request gives accName==?"))
+		panic(fmt.Sprintf("accountName (accaouts.go):  the request gives accName==?"))
 	}
 	printDebug(fmt.Sprintf("accountName: URI=%s;accName=%v", r.RequestURI, []byte(accName)))
+	return accName
+}
+
+//220405 11:56 In defference of func accountName it returns a account name (if the name not equal "?") in format of "<byte value>-<byte value> ... -<byte value>"
+func accountName2(r *http.Request) string {
+	var accName, accNameFromCtx string
+	accNameFromCtx = (r.Context().Value(AccNameCtxKey)).(string)
+	if accNameFromCtx == "" {
+		return "--"
+	}
+	if accNameFromCtx == "?" {
+		return "?"
+	}
+	accName = fmt.Sprintf("%d", []byte(accNameFromCtx)[0]) // string([]byte(accNameFromCtx)[0])
+	for _, bt := range []byte(accNameFromCtx)[1:] {
+		accName = accName + "-" + fmt.Sprintf("%d", bt)
+	}
+
 	return accName
 }
 
@@ -177,7 +196,7 @@ func regAccount(aN []byte, r *http.Request) {
 		accounts.PushFront(newAcc)
 		WriteToLog(fmt.Sprintf("Accont (new) name=%v", []byte(aN)))
 		accountsMtx.Unlock()
-		saveAccountList()
+		//saveAccountList() //220405 09:19
 	}
 }
 
@@ -340,4 +359,21 @@ func prolongeAccount(accName string) {
 		}
 	}
 
+}
+
+//220405 11:00 Without the mutex
+func getAccountsAsHTML() (res string) {
+	var account *Account
+	var aCS = accountCompsSpr
+	res = "<p>"
+
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		account = e.Value.(*Account)
+		//line = fmt.Sprintf("%s;%d;%s;%s\n", account.Name, account.Tp, optsToStr(account.Options), account.RegTm.Format("20060102_150405"))
+		//				   Nm  Tp  op  Tm
+		res = res + fmt.Sprintf("%s%s%d%s%s%s%s\n", byteSliceToStrRepresentation(account.Name), aCS, account.Tp, aCS, optsToStr(account.Options), aCS, account.RegTm.Format("20060102_150405"))
+		res = res + "<br>"
+	}
+	res = res + "</p>"
+	return
 }

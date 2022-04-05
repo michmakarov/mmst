@@ -1,1 +1,2 @@
-[66 184 244 195 204 62 193 144]-;;-1-;;-;--;RA;==;[::1]:41128;--;UA;==;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36;--;HOST;==;localhost:8080-;;-20220404_134517
+[82 249 67 159 245 96 229 80]-;;-1-;;-lang;==;ru;--;RA;==;[::1]:42220;--;UA;==;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36;--;HOST;==;localhost:8080-;;-20220405_083739
+[91 54 52 32 49 56 55 32 54 52 32 49 55 32 57 55 32 56 56 32 54 50 32 52 93]-;;-1-;;-HOST;==;localhost:8080;--;lang;==;ru;--;RA;==;[::1]:42184;--;UA;==;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36-;;-20220405_083247

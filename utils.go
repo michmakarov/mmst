@@ -6,7 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
+
+	//"os/exec"
+	"path/filepath"
+
 	"runtime"
 	"sort"
 	"strconv"
@@ -218,21 +221,28 @@ func optsToStr(opts map[string]string) string {
 	if opts == nil { //220307 08:58
 		panic("optsToStr: nill not allowed as parameter")
 	}
-	if len(opts) == 0 {
-		panic("optsToStr: empty map not allowed as parameter")
+	if len(opts) < minOptions {
+		panic(fmt.Sprintf("utils.go>optsToStr:len(opts) < %d", minOptions))
 	}
+
+	//fmt.Printf("-o-o-o-utils.go>OptsToStr: opts=%v\n", opts)
 
 	for key, val := range opts {
 		keyCount++
 		if err = goodString(key); err != nil {
 			panic("optToStr: Bad key:" + err.Error())
 		}
+		if key == "" {
+			panic(fmt.Sprintf("utils.go>optToStr: empty key; keyCount=%d", keyCount))
+		}
 		if err = goodString(val); err != nil {
 			panic("optToStr: bad value:" + err.Error())
 		}
 
+		//fmt.Printf("---------o-o-o-utils.go>OptsToStr: (%d)key=%s\n", keyCount, key)
+
 		if keyCount == 1 {
-			fmt.Sprintf("%s=%s", key, val)
+			res = fmt.Sprintf("%s%s%s", key, optionKVspr, val)
 		} else {
 			res = res + optionsSpr + fmt.Sprintf("%s%s%s", key, optionKVspr, val)
 		}
@@ -276,17 +286,18 @@ func strToOpts(s string) (opts map[string]string) {
 
 	opts = make(map[string]string)
 	optsSlice = strings.Split(s, optionsSpr)
-	fmt.Printf("-----utils.go>strToOpts: optsSlice=%v\n", optsSlice)
+	//fmt.Printf("-----utils.go>strToOpts: optsSlice=%v\n", optsSlice)
 	if len(optsSlice) < minOptions {
 		panic(fmt.Sprintf("Bad record of option(%s): not enough options, minOptions=%d", minOptions))
 	}
+	//fmt.Printf("----utils.go>strToOpts: s=%s\n", s)
 	for ind, keyVal := range optsSlice {
 		optSlice = strings.Split(keyVal, optionKVspr)
 		if len(optSlice) != 2 { //220307 11:08 - it is a need to check that splitting "qqq=" gives a slice with two components
 			//220404 10:52 the optSlice must contain exactly two components
 			panic(fmt.Sprintf("Bad record of option(%s)(index%d): no two componenct (key and value)(optionKVspr=%s)", keyVal, ind, optionKVspr))
 		}
-		fmt.Printf("----utils.go>strToOpts: optSlice=%v\n", optSlice)
+		//fmt.Printf("----utils.go>strToOpts: optSlice=%v\n", optSlice)
 		opts[optSlice[0]] = optSlice[1]
 	}
 	return opts
@@ -332,9 +343,22 @@ func printDebug(msg string) {
 }
 
 //22030404 07:25
-func removeOldLogs() error {
-	var cmd = exec.Command("rm", "*.log")
-	return cmd.Run()
+//220405 10:11
+func removeOldLogs() {
+	//func removeOldLogs() error {
+	//var cmd = exec.Command("rm", "*.log")
+	//return cmd.Run()
+	files, err := filepath.Glob("*.log")
+	if err != nil {
+		panic(fmt.Sprintf("utils.go>emoveOldLogs: getting file list err=%s", err.Error()))
+	}
+	for _, f := range files {
+		if err := os.Remove(f); err != nil {
+			panic(fmt.Sprintf("utils.go>emoveOldLogs: removing file=%s  err=%s", f, err.Error()))
+		} else {
+			fmt.Printf("utils.go>emoveOldLogs: %s was removed\n", f)
+		}
+	}
 }
 
 //220404 11:53

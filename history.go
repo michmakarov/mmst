@@ -138,5 +138,8 @@ As if to do decryption for any want of a account name is not decently. So the na
 2. About password: I firmly think that if some  malperson has access to the cloud that person may do all if he would want it
 _______13:29 The very old question: Is it need to ensure successive access if a process only reading the data?
 let's say that to overfart is better than underfart
-
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220405 08:51 As if all work well.
+But restoring accounts appears unnecessary as it demands to store encryption data that does not seem a good idea.
+What is concerning the password, let it goes in code still as a variable that maybe in future will be assigned dynamically. 
 `

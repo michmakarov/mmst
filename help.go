@@ -10,17 +10,19 @@ h - it must be first
 `
 var noCookieMess = `
 <h2> No registration error</h2>
-<p>For having asscees to the site you have to obtain a cookie.
+<p>For having access to the site you have to obtain a cookie.
 For this you should give a special request: <a href="/registerme"> registration </a>
 </p>
 `
 var CookieIs = `
 <h2> You have been registered</h2>
 <p>
+A cookie with name of "mmstSession" was sent to your agent.
 Now you have an account on the site. It will be exist 720 hours.<br>
 Your registration code has been sent to you as a cookie with name mmstSession <br>
 The cookie is termless but the account may be expired. In this case you must register again<br>
 Now you may do any request provide sending with it the cookie and while the account exist
+For example <a href="/">Start page</a> will show index page (/) of the site 
 </p>
 `
 

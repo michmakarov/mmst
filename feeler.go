@@ -60,7 +60,7 @@ func (f *feeler) WriteFLog(s string) {
 }
 func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var accRes byte
-	var accName string
+	var accName, aN string
 	var logMess string
 	var s string
 	defer func() {
@@ -92,7 +92,13 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	accName, accRes = getAccount2(r) //getCookieVal(r)
 
-	logMess = fmt.Sprintf("%s:%d--ACC=%s--URI=%s--RA=%s", time.Now().Format("20060102_150405"), f.feelerCount, accName, r.RequestURI, r.RemoteAddr)
+	if accRes == 0 {
+		aN = fmt.Sprintf("%v", []byte(accName))
+	} else {
+		aN = fmt.Sprintf("accRes==%d", accRes)
+	}
+
+	logMess = fmt.Sprintf("%s:%d--ACC=%s--URI=%s--RA=%s", time.Now().Format("20060102_150405"), f.feelerCount, aN, r.RequestURI, r.RemoteAddr)
 	f.WriteFLog(logMess) // (220322-account : confirmation) The feeler log fixes all incoming requests.
 	if isDebug(serverMode) {
 		fmt.Println(logMess)

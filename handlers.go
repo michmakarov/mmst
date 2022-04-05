@@ -23,10 +23,18 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //220118 07:31 220331 11:54
+//220405 10:45
 func accountsHandler(w http.ResponseWriter, r *http.Request) {
-	//var accountsFileName = "Accounts" + time.Now().Format("20060102_150405") + ".log"
-	//saveAccounts(accountsFileName)
-	//http.ServeFile(w, r, accountsFileName)
+	if r.FormValue("pw") != passWord {
+		msg := fmt.Sprintf("%s > bad password", getRequestBrief(r))
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(500)
+		w.Write([]byte(msg))
+		return
+	}
+	w.Header().Set("Content-Type", "text/htmlB; charset=utf-8")
+	w.WriteHeader(200)
+	w.Write([]byte(getAccountsAsHTML()))
 }
 
 //220113 04:43 Only sense of this to resolve the enigma of e_2 (see the history of 220113 04:17)
@@ -303,7 +311,7 @@ func smsHandler(w http.ResponseWriter, r *http.Request) {
 func letterHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var cont string //the content of the letter
-	var fileName = fmt.Sprintf("letters/letter_%s_%s.txt", accountName(r), time.Now().Format("20060102_15:04:05"))
+	var fileName = fmt.Sprintf("letters/letter_%s_%s.txt", accountName2(r), time.Now().Format("20060102_15:04:05"))
 	var letFile *os.File
 	var letVolume int
 	var msgSms string
@@ -330,9 +338,9 @@ func letterHandler(w http.ResponseWriter, r *http.Request) {
 		if _, err = sendSms(msgSms, ""); err != nil {
 			panic(fmt.Sprintf("letterHamdler: sendSms err=%s", err.Error()))
 		}
-		msgLet = fmt.Sprintf("The letter of %d (from %s) was saved successfully with a name of %s WITH sending sms", letVolume, accountName(r), fileName)
+		msgLet = fmt.Sprintf("The letter of %d (from %s) was saved successfully with a name of %s WITH sending sms", letVolume, accountName2(r), fileName)
 	} else {
-		msgLet = fmt.Sprintf("The letter of %d (from %s) was saved successfully with a name of %s WITHOUT sms", letVolume, accountName(r), fileName)
+		msgLet = fmt.Sprintf("The letter of %d (from %s) was saved successfully with a name of %s WITHOUT sms", letVolume, accountName2(r), fileName)
 
 	}
 
