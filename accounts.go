@@ -66,9 +66,9 @@ func getAccount2(r *http.Request) (mess string, res byte) {
 		res = 3
 		mess = fmt.Sprintf("getAccount: from %s was a valid cookie (val = %s) but an account absences", r.RemoteAddr, mess)
 	}
-	if isDebug(serverMode) {
-		fmt.Printf("DDDD---- getAccount2: res=%d; accName=%s\n", res, mess)
-	}
+	//if isDebug(serverMode) {
+	//	fmt.Printf("DDDD---- getAccount2: res=%d; accName=%s\n", res, mess)
+	//}
 	return
 }
 

@@ -8,7 +8,7 @@
     </head>
 <body> 
 	<h4><br>
-	<i> :::0.0-2-g562db44[branch_*main,commit_562db44]_220204_0533::: query num = {{.ReqNum}}</i><br>
+	<i> :::mmst-of-0.1,built-on-mich412-A320M-S2H-V2-at-220408_1858-commit:d0ea14d::: query num = {{.ReqNum}}</i><br>
 	<p> This button shows actual language and changes it.
 		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
 		There is not true supporting of different languages.<br>
@@ -36,6 +36,15 @@
 		Зачем? Вдруг, как я уже говорил, кто-то заинтересуетя моей персоной. Тогда здесь исключительно фактический материал, который сквжет все опытному в ИТ области.<br>
 		<a href="/history"> Запрос /history</a>
 	</div><br><!-- query /history" -->
+
+	<div class="query">
+		Here is some info about properties of the server.<br>
+		<br>
+		<a href="/help"> Запрос /help</a>
+	</div><br><!-- query /history" -->
+
+
+
 	<div class="query">
 		Покажет Ваш аккаунт<br>
 		<a href="/myAccount">/myAaccount</a>
@@ -86,8 +95,18 @@
 		Password:<input type="text" name="pw" value="none"><br>
 		<input type="submit" value="Submit">
 	</form> 
-	</div><!-- form /sms -->
+	</div><!-- form /accounts -->
 
+	<div class="form">
+		<b>Front log</b><br>
+		This shows lines from the front log.<br>
+		if you give some substr only lines containing the substr will be shown<br>
+		About the front log you may read <a href="/help"> here</a> 
+	<form action="/showFeelerLog" target="formres">
+		substr:<input type="text" name="substr" value=""><br>
+		<input type="submit" value="Submit">
+	</form> 
+	</div><!-- form /showFeelerLog -->
 
 
 </div><!-- formdiv -->

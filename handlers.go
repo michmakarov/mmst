@@ -12,6 +12,8 @@ import (
 	"io/ioutil"
 	"strings"
 	"time"
+
+	"bufio"
 )
 
 var buffs [][]byte
@@ -32,7 +34,7 @@ func accountsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(msg))
 		return
 	}
-	w.Header().Set("Content-Type", "text/htmlB; charset=utf-8")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
 	w.Write([]byte(getAccountsAsHTML()))
 }
@@ -379,4 +381,47 @@ func myAccountHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
+}
+
+//220407 12:13
+//A crossroads: 1. to use f.log (*os.File) 2. to use ioutil.ReadFile(fileName)
+//12:23 I select second way; It seems to me more educational
+func showFeelerLogHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var line string
+	var substr string
+	var f *os.File
+	var sc *bufio.Scanner
+
+	//printDebug("showFeelerLogHandler: srart")
+
+	if f, err = os.Open(flr.logFileName); err != nil {
+		panic(fmt.Sprintf("showFeelerLogHandler: open front log err=%s", err.Error()))
+	}
+	substr = r.FormValue("substr")
+	sc = bufio.NewScanner(f)
+
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(200)
+
+	for sc.Scan() {
+		line = sc.Text()
+		//printDebug(fmt.Sprintf(""))
+		if strings.Contains(line, substr) {
+			line = line + "\n"
+			w.Write([]byte(line))
+		}
+	}
+	if err = sc.Err(); err != nil {
+		fmt.Fprintln(w, "Scanning front log err=", err)
+	}
+	fmt.Fprintln(w, "--------------------------")
+
+}
+
+//2200408 10:06
+func helpHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(200)
+	w.Write([]byte(help))
 }

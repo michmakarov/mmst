@@ -336,7 +336,7 @@ func convAccountTm(tm string) (res time.Time) {
 }
 
 func printDebug(msg string) {
-	if !isDebug(serverMode) {
+	if serverMode != 2 {
 		return
 	}
 	fmt.Printf("DDDD-----%s\n", msg)
@@ -376,4 +376,30 @@ func byteStrRepresentationToByteSlice(s string) (res []byte) {
 	}
 
 	return
+}
+
+//220407 14:27 I did not find any better than to write this utilite.
+func writeAllToFile(f *os.File, buf []byte) {
+	var bytes int = len(buf)
+	var totalWriten int
+	var writen int
+	var maxCount = 10
+	var count int
+	var err error
+
+	if bytes == 0 {
+		panic("writeAllToWile: nothing to write")
+	}
+
+	for totalWriten != bytes {
+		count++
+		writen, err = f.Write(buf)
+		if err != nil {
+			panic(fmt.Sprintf("writeAllToWile: writing err=%s", err.Error()))
+		}
+		if count > maxCount {
+			panic(fmt.Sprintf("writeAllToWile: count more that %d", maxCount))
+		}
+		totalWriten = totalWriten + writen
+	}
 }

@@ -141,5 +141,13 @@ let's say that to overfart is better than underfart
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 220405 08:51 As if all work well.
 But restoring accounts appears unnecessary as it demands to store encryption data that does not seem a good idea.
-What is concerning the password, let it goes in code still as a variable that maybe in future will be assigned dynamically. 
+What is concerning the password, let it goes in code still as a variable that maybe in future will be assigned dynamically.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220407 10:51 What is next?
+1. Old question: How to ensure that a client (or, precisely, an agent) is using the server's software (is, css, ...)
+2. Request(s) showing log(s)
+_______11:24
+The first appears now senseless. Maybe in future it will arise again when the question "what is application" will take more clear answer.
+The second is more real so let's go doing it
+_______14:47 The fact: there is writing into Stdout but there is not into the feeler log
 `

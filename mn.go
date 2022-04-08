@@ -40,7 +40,8 @@ var exitByError = true
 // 101 : http with sms with debug
 var serverMode int
 
-var flr *feeler //220108 08:22
+var flr *feeler                  //220108 08:22
+var maxFrontLogSize = 1000000000 //220408 17:38 100Mb
 
 //var lang string = "ru"
 var passWord string = "***not assigned yet***" //220405 10:41
@@ -84,6 +85,8 @@ func main() {
 	mx.HandleFunc("/css", cssHandler)
 
 	mx.HandleFunc("/myAccount", myAccountHandler)
+	mx.HandleFunc("/showFeelerLog", showFeelerLogHandler)
+	mx.HandleFunc("/help", helpHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 

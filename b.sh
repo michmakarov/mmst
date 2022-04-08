@@ -17,6 +17,7 @@ fi
 versionInfo=$(echo $appname_$last_git_commit_tag[branch_$branch,commit_$last_git_commit]_$compiltime)
 
 
+
 go build -ldflags "-X main.versionInfo=$versionInfo"
 
 if [ $? != 0 ]; then 

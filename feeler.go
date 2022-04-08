@@ -4,11 +4,14 @@ package main
 import (
 	"context"
 	"fmt"
+
+	//"io"
 	"net/http"
 	"os"
 
 	"runtime/debug"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -27,6 +30,8 @@ type feeler struct {
 	h           http.Handler // invoking handler
 	feelerCount int64
 	log         *os.File
+	logFileName string
+	mtx         *sync.Mutex
 }
 
 func createFeeler(h http.Handler) (f *feeler) {
@@ -38,30 +43,40 @@ func createFeeler(h http.Handler) (f *feeler) {
 		fmt.Printf("Creating feeler log file err=%s", err.Error())
 		os.Exit(1)
 	}
+	f.logFileName = fLogFileName
 	if _, err = f.log.WriteString(fmt.Sprintf("Start %s\n", time.Now().Format("20060102_150405"))); err != nil {
 		fmt.Printf("inserting start record into feeler log file err=%s", err.Error())
 		os.Exit(1)
 	}
+	f.mtx = &sync.Mutex{}
 
 	return f
 }
 
 //220325 11:06
 //func (f *feeler) WriteFLog(r *http.Request) {
-func (f *feeler) WriteFLog(s string) {
-	var err error
-
-	//if _, err = f.log.WriteString(fmt.Sprintf("%s:%d--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.feelerCount, r.RequestURI, r.RemoteAddr)); err != nil {
+//220408 08:29
+func (f *feeler) WriteFLog(r *http.Request, aN string) {
+	var s string
+	//if _, err = f.log.WriteString(s); err != nil {
 	//	panic(fmt.Sprintf("writing into feeler log file err=%s", err.Error()))
 	//}
-	if _, err = f.log.WriteString(s); err != nil {
-		panic(fmt.Sprintf("writing into feeler log file err=%s", err.Error()))
+	s = fmt.Sprintf("DATE=%s--NUM=%d--ACC=%s--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.feelerCount, aN, r.RequestURI, r.RemoteAddr)
+
+	f.mtx.Lock()
+	defer f.mtx.Unlock()
+
+	if isDebug(serverMode) {
+		fmt.Print(s)
 	}
+
+	writeAllToFile(f.log, []byte(s))
+
 }
 func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var accRes byte
 	var accName, aN string
-	var logMess string
+	//var logMess string
 	var s string
 	defer func() {
 		var rec interface{}
@@ -98,11 +113,10 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		aN = fmt.Sprintf("accRes==%d", accRes)
 	}
 
-	logMess = fmt.Sprintf("%s:%d--ACC=%s--URI=%s--RA=%s", time.Now().Format("20060102_150405"), f.feelerCount, aN, r.RequestURI, r.RemoteAddr)
-	f.WriteFLog(logMess) // (220322-account : confirmation) The feeler log fixes all incoming requests.
-	if isDebug(serverMode) {
-		fmt.Println(logMess)
-	}
+	f.WriteFLog(r, aN) //220408 08:29 (220322-account : confirmation) The feeler log fixes all incoming requests.
+	//if isDebug(serverMode) {
+	//	fmt.Println(logMess)
+	//}
 
 	if r.URL.Path == "/q" {
 		s = fmt.Sprintf("There is /q debug request; accName=%s; accres=%d", accName, accRes)
