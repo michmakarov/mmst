@@ -12,11 +12,11 @@ import (
 	"os"
 	"os/signal"
 
-	//"html/template"
 	"sync/atomic"
 	"syscall"
 	"time"
-	//_ "github.com/lib/pq"
+
+	"runtime"
 )
 
 const timeFormat = "20060102_150405"
@@ -56,14 +56,21 @@ var accountsFileName string = "accountList.txt"
 var accountsFileMaxSize = 10000 //bytes
 
 //220308 08:23
-var logFileName string = "general.log"
+var generalLogFileName string = "general.log"
 
 //220311 15:00
 var httpLogFileName string = "http.log"
 
 func main() {
 
+	if runtime.GOOS != "linux" || runtime.GOARCH != "amd64" {
+		fmt.Printf("This program intends to work only under linux/arm64, but here is %s and %s\n", runtime.GOOS, runtime.GOARCH)
+		return
+	}
+
+	redirectStd()
 	removeOldLogs()
+	creteGeneralHttpLogs()
 	setArgs()
 
 	mx := http.DefaultServeMux
@@ -87,6 +94,7 @@ func main() {
 	mx.HandleFunc("/myAccount", myAccountHandler)
 	mx.HandleFunc("/showFeelerLog", showFeelerLogHandler)
 	mx.HandleFunc("/help", helpHandler)
+	mx.HandleFunc("/showGeneralLog", showGeneralLogHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 
@@ -147,11 +155,13 @@ func main() {
 }
 
 func waitForShutdown(srv *http.Server) {
+	var incomeSig os.Signal
 	interruptChan := make(chan os.Signal, 1)
 	signal.Notify(interruptChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	// Block until we receive our signal.
-	<-interruptChan
+	incomeSig = <-interruptChan
+	WriteToCommonLog(fmt.Sprintf("waitForShutdown: a signal was received: %s", incomeSig.String()))
 
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -169,4 +179,15 @@ func onShutDown() {
 
 func getRequestCounter() uint32 {
 	return atomic.AddUint32(&RequestCounter, 1)
+}
+
+//220414 05:56
+func redirectStd() {
+	var err error
+	var nStd *os.File
+	if nStd, err = os.Create("out.txt"); err != nil {
+		panic(fmt.Sprintf("redirectStd:creating out.txt err=%s", err.Error()))
+	}
+	os.Stdout = nStd
+	os.Stderr = nStd
 }

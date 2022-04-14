@@ -6,13 +6,15 @@ echo 220407 07:43 bl.sh - the local building of mmst
 #But, as usual, I fogot to save it and started the initial content, that is in fact I started b.sh
 # So, now on the cloud works the executable with tag=0.0 and with little intelligible info
 
-appname="${PWD##*/}"
-ndname=$(uname -n)
+#appname="${PWD##*/}"
+appname=mmst
+hostname=$(hostname)
 compiltime=$(date +%y%m%d_%H%M)
 last_git_commit=$(git log --pretty=format:"%h" -n 1)
 git_branch=$(git branch | sed 's/ //g' )
 last_git_commit_tag=$(git describe --tags $last_git_commit)
-versionInfo=$appname-of-$last_git_commit_tag,built-on-$ndname-at-$compiltime-commit:$last_git_commit
+#versionInfo=$appname-of-$last_git_commit_tag,built-on-$ndname-at-$compiltime-commit:$last_git_commit
+versionInfo=$appname---$last_git_commit_tag---$hostname---$compiltime
 
 
 #echo appname=$appname--
@@ -28,7 +30,7 @@ versionInfo=$appname-of-$last_git_commit_tag,built-on-$ndname-at-$compiltime-com
 
 
 
-go build -ldflags "-X main.versionInfo=$versionInfo"
+go build -ldflags "-X main.versionInfo=$versionInfo" -o $appname
 
 if [ $? != 0 ]; then 
 echo golang building failed;

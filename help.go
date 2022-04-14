@@ -10,7 +10,22 @@ var help = `
 </head>
 <body>
 <h1>The http server of the mmst site has next features.</h1>
-qwerty<br>
+<h2>VERSIONING</h2>
+A version of the server is a string with fields divided by "---" (the three going in succession letters "-")<br>
+For example "mmst---0.1-1-g7bfa24b---mich412-A320M-S2H-V2---220411_1704"
+Versions are constituted and distributed by the command files of bl.sh and b.sl which a formed the same version.<br>
+The distribution means that the server version serves as tag that mark other files of the site, such as .html, .js, or .css
+The fields have next sense:
+<h3>1.Prog name</h3>
+it is the base name of an executable file represented the server.<br>
+For example "mmst"
+<h3>2.TAG</h3>
+It is a tag of the last git commit. For example "0.1-1-g7bfa24b"<br>
+it is a result of the git command "git describe --tags <last_git_commit"> where <last_git_commit"> is result of "git log --pretty=format:"%h" -n 1"<br>
+<h3>3.HOSTNAME</h3>
+It is a result of the linux command "hastname", for example mich412-A320M-S2H-V2
+<h3>4.TIME</h3>
+It represent the buiding time and is result of the linux command "date +%y%m%d_%H%M", for example 220411_1704
 <h2>FRONT LOG</h2>
 About each incoming request the server make a record into a special file, that is named "Front log"<br>
 The record has format: "property--property--...property" <br>
@@ -31,6 +46,8 @@ There are errors:<br>
 2 - there is cookie but decrypting was not successful<br>
 <h3>URI</h3>
 For example URI=/accounts?pw=none<br>
+<h3>RA</h3>
+Remote address. For example RA=[::1]:36174<br>
 </body>
 </html>
 `

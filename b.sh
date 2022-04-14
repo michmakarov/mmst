@@ -1,62 +1,76 @@
 #!/bin/bash
 
-echo 220202 06:29 I do not know yet what it does
+#echo 220202 06:29 I do not know yet what it does
+echo 220411 08:57 b.sh - the local building of the mmst server with further manipulations on root@95.213.191.152 
+echo 
 
-
-appname="${PWD##*/}"
+appname=mmst
+hostname=$(hostname)
 compiltime=$(date +%y%m%d_%H%M)
 last_git_commit=$(git log --pretty=format:"%h" -n 1)
-branch=$(git branch | sed 's/ //g' )
+git_branch=$(git branch | sed 's/ //g' )
 last_git_commit_tag=$(git describe --tags $last_git_commit)
-
-if [ $branch != *main ]; then 
-echo The branch is not main : $last_git_commit_tag
-exit
-fi
-
-versionInfo=$(echo $appname_$last_git_commit_tag[branch_$branch,commit_$last_git_commit]_$compiltime)
+versionInfo=$appname---$last_git_commit_tag---$hostname---$compiltime
 
 
 
-go build -ldflags "-X main.versionInfo=$versionInfo"
 
+
+go build -ldflags "-X main.versionInfo=$versionInfo" -o $appname
 if [ $? != 0 ]; then 
-echo golang building failed;
+echo 1:golang building failed;
 exit;
 else
-echo The compilation was successful;
-echo ver: $versionInfo;
+echo 1:The compilation was successful. ver: $versionInfo;
 fi
+
+
 
 
 sed -i "s/:::.*:::/:::$versionInfo:::/" html/*.html mmsit.js mystyle.css
-
-#exit
-
-
-
 if [ $? != 0 ]; then 
-echo the sed failed
+echo 2:the sedding failed
 exit
+else
+echo 2:The version was sedded to html/*.html mmsit.js mystyle.css
 fi
 
-echo stopping mmst start ----------------------------------
-ssh root@95.213.191.152 "pkill mmst;"
-echo stoping mmst end -------------------------------------
+ssh root@95.213.191.152 "pkill $appname"
+if [ $? != 0 ]; then 
+echo 3: the stopping the old version of $appname was failed.
+exit
+else
+echo 3: the stopping the old version of $appname was successful.
+fi
 
 
-echo scp start ==================================
 scp -r $appname html image  b.sh *.go favicon.ico mmsit.js mystyle.css root@95.213.191.152:~/mmst 
-echo scp end ==================================
+if [ $? != 0 ]; then 
+echo 4: the scping project files to the cloud was failed.
+exit
+else
+echo 4: the scping project files to the cloud was successful.
+fi
 
 
-echo deleting files start ----------------------------------
-ssh root@95.213.191.152 "cd mmst;rm *.log nohup.out"
-echo deleting files end -------------------------------------
+ssh root@95.213.191.152 "cd mmst;rm *.log out.txt"
+if [ $? != 0 ]; then 
+echo 5: the removing old logs and nohup.out was failed.
+exit
+else
+echo 5: the removing old logs and nohup.out was successful.
+fi
 
-echo launching start ====================================
-echo no realization yet ssh root@95.213.191.152 "cd mmsite;nohup ./mmsite & ;pgrep mmsite "
-echo launching end ======================================
+
+
+
+ssh root@95.213.191.152 "cd mmst; ./mmsite &"
+if [ $? != 0 ]; then 
+echo 6: the launching of the new version was failed.
+exit
+else
+echo 6: the launching of the new version was successful.
+fi
 
 
 

@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-var lf, sLf *os.File
 var logger, servLogger *log.Logger
 
-func init() {
+func creteGeneralHttpLogs() {
+	var lf, sLf *os.File
 	var err error
 	var pref = time.Now().Format(timeFormat)
-	if lf, err = os.Create(logFileName); err != nil {
+	if lf, err = os.Create(generalLogFileName); err != nil {
 		panic(fmt.Sprintf("Error of creating a log file=%s\n", err.Error()))
 	}
 	if sLf, err = os.Create(httpLogFileName); err != nil {
@@ -23,9 +23,14 @@ func init() {
 	}
 	logger = log.New(lf, pref, log.Lshortfile)
 	servLogger = log.New(sLf, pref, log.Lshortfile)
+	WriteToCommonLog("CommonLog Started\n")
+	WriteToServLog("ServLog Started\n")
 }
-func WriteToLog(msg string) {
-	logger.Output(2, msg)
+func WriteToCommonLog(msg string) {
+	var err error
+	if err = logger.Output(2, msg); err != nil {
+		panic(fmt.Sprintf("WriteToCommonLog err=%s\n", err.Error()))
+	}
 }
 func WriteToServLog(msg string) {
 	servLogger.Output(2, msg)

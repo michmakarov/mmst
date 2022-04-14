@@ -350,13 +350,13 @@ func removeOldLogs() {
 	//return cmd.Run()
 	files, err := filepath.Glob("*.log")
 	if err != nil {
-		panic(fmt.Sprintf("utils.go>emoveOldLogs: getting file list err=%s", err.Error()))
+		panic(fmt.Sprintf("utils.go>removeOldLogs: getting file list err=%s", err.Error()))
 	}
 	for _, f := range files {
 		if err := os.Remove(f); err != nil {
-			panic(fmt.Sprintf("utils.go>emoveOldLogs: removing file=%s  err=%s", f, err.Error()))
+			panic(fmt.Sprintf("utils.go>removeOldLogs: removing file=%s  err=%s", f, err.Error()))
 		} else {
-			fmt.Printf("utils.go>emoveOldLogs: %s was removed\n", f)
+			fmt.Printf("utils.go>removeOldLogs: %s was removed\n", f)
 		}
 	}
 }

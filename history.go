@@ -150,4 +150,8 @@ _______11:24
 The first appears now senseless. Maybe in future it will arise again when the question "what is application" will take more clear answer.
 The second is more real so let's go doing it
 _______14:47 The fact: there is writing into Stdout but there is not into the feeler log
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220414 05:08 After having cleaned up different foolishness I am going to make 1.0
+But before it there is need to bring to oder b.sh, namely to improve starting a new version on the cloud. Now. with the nohup, that does not work at all
+_______05:42 How to redirect std.out and std.err to a file (as the terminal is absent)
 `

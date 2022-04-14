@@ -425,3 +425,37 @@ func helpHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write([]byte(help))
 }
+
+//220412 15:56
+func showGeneralLogHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var line string
+	var substr string
+	var f *os.File
+	var sc *bufio.Scanner
+
+	//printDebug("showFeelerLogHandler: srart")
+
+	if f, err = os.Open(generalLogFileName); err != nil {
+		panic(fmt.Sprintf("showGeneralLogHandler: open log err=%s", err.Error()))
+	}
+	substr = r.FormValue("substr")
+	sc = bufio.NewScanner(f)
+
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(200)
+
+	for sc.Scan() {
+		line = sc.Text()
+		//printDebug(fmt.Sprintf(""))
+		if strings.Contains(line, substr) {
+			line = line + "\n"
+			w.Write([]byte(line))
+		}
+	}
+	if err = sc.Err(); err != nil {
+		fmt.Fprintln(w, "Scanning general  log err=", err)
+	}
+	fmt.Fprintln(w, "--------------------------")
+
+}

@@ -194,7 +194,7 @@ func regAccount(aN []byte, r *http.Request) {
 		var newAcc = &Account{aN, 1, opts, time.Now()}
 		accountsMtx.Lock()
 		accounts.PushFront(newAcc)
-		WriteToLog(fmt.Sprintf("Accont (new) name=%v", []byte(aN)))
+		WriteToCommonLog(fmt.Sprintf("Accont (new) name=%v", []byte(aN)))
 		accountsMtx.Unlock()
 		//saveAccountList() //220405 09:19
 	}
@@ -279,7 +279,7 @@ func restoreAccounts() {
 		panic(fmt.Sprintf("restoreAccounts: getting info of %s; err=%s", accountsFileName, err.Error()))
 	}
 	if fi.Size() > int64(accountsFileMaxSize) {
-		WriteToLog(fmt.Sprintf("Size of %s is more than %d; accounts will be accounted newly", accountsFileName, accountsFileMaxSize))
+		WriteToCommonLog(fmt.Sprintf("Size of %s is more than %d; accounts will be accounted newly", accountsFileName, accountsFileMaxSize))
 		return
 	}
 

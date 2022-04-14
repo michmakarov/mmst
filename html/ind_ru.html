@@ -8,7 +8,7 @@
     </head>
 <body> 
 	<h4><br>
-	<i> :::mmst-of-0.1,built-on-mich412-A320M-S2H-V2-at-220408_1858-commit:d0ea14d::: query num = {{.ReqNum}}</i><br>
+	<i> :::mmst---1.0---mich412-A320M-S2H-V2---220414_1102::: query num = {{.ReqNum}}</i><br>
 	<p> This button shows actual language and changes it.
 		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
 		There is not true supporting of different languages.<br>
@@ -101,8 +101,18 @@
 		<b>Front log</b><br>
 		This shows lines from the front log.<br>
 		if you give some substr only lines containing the substr will be shown<br>
-		About the front log you may read <a href="/help"> here</a> 
+		About the logs you may read <a href="/help"> here</a> 
 	<form action="/showFeelerLog" target="formres">
+		substr:<input type="text" name="substr" value=""><br>
+		<input type="submit" value="Submit">
+	</form> 
+	</div><!-- form /showFeelerLog -->
+	<div class="form">
+		<b>General log</b><br>
+		This shows lines from the general log.<br>
+		if you give some substr only lines containing the substr will be shown<br>
+		About the logs you may read <a href="/help"> here</a> 
+	<form action="/showGeneralLog" target="formres">
 		substr:<input type="text" name="substr" value=""><br>
 		<input type="submit" value="Submit">
 	</form> 

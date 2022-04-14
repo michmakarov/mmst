@@ -100,7 +100,7 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var accs = delExpiredAccounts()
 		if len(accs) != 0 {
 			var msg = fmt.Sprintf("deleting expired %v", accs)
-			WriteToLog(msg)
+			WriteToCommonLog(msg)
 		}
 
 	}
