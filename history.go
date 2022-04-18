@@ -154,4 +154,20 @@ _______14:47 The fact: there is writing into Stdout but there is not into the fe
 220414 05:08 After having cleaned up different foolishness I am going to make 1.0
 But before it there is need to bring to oder b.sh, namely to improve starting a new version on the cloud. Now. with the nohup, that does not work at all
 _______05:42 How to redirect std.out and std.err to a file (as the terminal is absent)
+_______11:35 the b.sh does not work fitly: it does not say about remote launching (the six point) although a new version works
+that the bash is a very intricate I know. It constantly surprises me and that seems without end
+Of cause here to pecularities of the bash the ones of the ssh was added.
+There is need to search a new approach but I am tired from the mmst. So a while I leave it.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220415 08:42 the music did not play for long: feeler panic getLang: The lang key is empty for / (/ from 77.108.87.132:40298)
+The problem is reproducing on the Chrome but not on the Opera (if not paying attention to strange behavior of the Opera on 41)
+_______11:44 Let's it be problem_220415
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220416 08:11 problem_220415
+This has place on both, 44 and 41. I cannot say yet the exact way to repeat it, but it has place exactly.
+What to do? More of all afraids me that it has place with Chromium, but not with Opera and Firefox
+_______08:35 In first queue there is want of a independent client
+_______08:57 But already there is such! see Progects/freelancer/mmclient
+Let's copy it under the git of the mmst
+_______09:08 Now it is Progects/freelancer/mmst/mmclient
 `

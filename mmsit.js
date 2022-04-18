@@ -3,7 +3,7 @@
 
 //22201 07:02 it is a descendant of freelancer/mmsite/mmsit.js 
 
-//versionInfo = :::mmst---1.0---mich412-A320M-S2H-V2---220414_1102:::
+//versionInfo = :::mmst---1.0-1-gc983d9e---mich412-A320M-S2H-V2---220416_0724:::
 
 //var mmsitRevision="22201 07:02"
 

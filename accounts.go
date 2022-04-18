@@ -163,11 +163,14 @@ func getOptionsByAcc(accName []byte) (optsCopy map[string]string) {
 		return
 	}
 	//panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
+	//220416 07:20 problem_220415 In attempt to solve
+	panic(fmt.Sprintf("getOptionsByAcc: no options for %v", accName))
 	return
 
 }
 
 //220118 15:39 The func returns  a language name of a given request.
+//220416 07:08 see problem_220415 How to resolve it?
 func getLang(r *http.Request) string {
 	var lang string
 	lang = getOptions(r)["lang"]

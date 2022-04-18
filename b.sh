@@ -38,7 +38,7 @@ fi
 ssh root@95.213.191.152 "pkill $appname"
 if [ $? != 0 ]; then 
 echo 3: the stopping the old version of $appname was failed.
-exit
+
 else
 echo 3: the stopping the old version of $appname was successful.
 fi
@@ -47,7 +47,6 @@ fi
 scp -r $appname html image  b.sh *.go favicon.ico mmsit.js mystyle.css root@95.213.191.152:~/mmst 
 if [ $? != 0 ]; then 
 echo 4: the scping project files to the cloud was failed.
-exit
 else
 echo 4: the scping project files to the cloud was successful.
 fi
@@ -56,7 +55,7 @@ fi
 ssh root@95.213.191.152 "cd mmst;rm *.log out.txt"
 if [ $? != 0 ]; then 
 echo 5: the removing old logs and nohup.out was failed.
-exit
+
 else
 echo 5: the removing old logs and nohup.out was successful.
 fi
@@ -64,7 +63,7 @@ fi
 
 
 
-ssh root@95.213.191.152 "cd mmst; ./mmsite &"
+ssh root@95.213.191.152 "cd mmst; ./mmst mode=11 &"
 if [ $? != 0 ]; then 
 echo 6: the launching of the new version was failed.
 exit

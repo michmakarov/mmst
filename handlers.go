@@ -136,7 +136,7 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fileName = "./html/ind_ru.html"
 	}
-
+	/* 220415 09:43 This stratum is unnecessary as all panics are intercepted by the feeler.
 	defer func() {
 		if rec := recover(); rec != nil {
 			//panicMessage := fmt.Sprintf("(Addr=%v;N=%v) panic:%v", r.RemoteAddr, getRequestCounter(), rec)
@@ -147,7 +147,7 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("indHandler panics:", panicMessage)
 		}
 	}()
-
+	*/
 	if templ, err = template.ParseFiles(fileName); err != nil {
 		panic(fmt.Sprintf("indHandler: parsing %s err=%s", fileName, err.Error()))
 	}
