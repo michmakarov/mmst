@@ -1,0 +1,5 @@
+#This is file with parameters of the mmclient
+# the # character in the first position denotes a comment line
+#for details see ./mmclient h
+URI=https://www.dost346.ru:8080/q
+COOKIES=mmstSession=2272693429ad5ee1afd5a862e0601aa73b4a8b3c9ecd18645cc0f042a95b8595c29f646efbd2f450

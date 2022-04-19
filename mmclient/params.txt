@@ -1,4 +1,0 @@
-#This is file with parameters of the mmclient
-#for details see ./mmclient h=
-METH=get
-URI=https://www.dost346.ru:8080/q
