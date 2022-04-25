@@ -54,7 +54,7 @@ fi
 
 ssh root@95.213.191.152 "cd mmst;rm *.log out.txt"
 if [ $? != 0 ]; then 
-echo 5: the removing old logs and nohup.out was failed.
+echo 5: the removing old logs and out.txt was failed.
 
 else
 echo 5: the removing old logs and nohup.out was successful.
@@ -63,13 +63,13 @@ fi
 
 
 
-ssh root@95.213.191.152 "cd mmst; ./mmst mode=11 &"
-if [ $? != 0 ]; then 
-echo 6: the launching of the new version was failed.
-exit
-else
-echo 6: the launching of the new version was successful.
-fi
+#ssh root@95.213.191.152 "cd mmst; ./mmst mode=11 &"
+#if [ $? != 0 ]; then 
+#echo 6: the launching of the new version was failed.
+#exit
+#else
+#echo 6: the launching of the new version was successful.
+#fi
 
 
 

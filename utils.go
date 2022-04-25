@@ -33,8 +33,6 @@ func memStatStr(start time.Time) (res string) {
 //211025 - 211027_13:41
 //220105 13:18
 func setArgs() {
-	//var err error
-	const MaxMode = 111
 	for i := 1; i < len(os.Args); i++ {
 		var splitedArg = strings.Split(os.Args[i], "=")
 		if len(splitedArg) != 2 {
@@ -42,20 +40,16 @@ func setArgs() {
 			os.Exit(1)
 		}
 		switch splitedArg[0] {
-		//		case "pg":
-		//			PG_CONN_STR = splitedArg[1]
 		case "la":
 			listeningAddr = splitedArg[1]
-			break
 		case "pw":
 			passWord = splitedArg[1]
-			break
 		case "mode":
 			serverMode, _ = strconv.Atoi(splitedArg[1])
-			if serverMode < 0 || serverMode > MaxMode {
-				serverMode = 0
+			if serverMode < 0 || serverMode > serverMaxMode {
+				fmt.Printf("The mode must be > 0 and < serverMaxMode\n")
+				os.Exit(1)
 			}
-			break
 		default:
 			fmt.Printf("There is not allowed option %v\n", splitedArg[0])
 			os.Exit(1)
@@ -85,22 +79,46 @@ func MyServeFile(w http.ResponseWriter, r *http.Request, fileName string) {
 	//}
 }
 
-//220128 10:29
+//220128 10:29 220421 21:19
 func isDebug(mode int) bool {
-	return mode%10 != 0
+	return digInPos(mode, 1) > 0
 }
 func isHTTPS(mode int) bool {
-	var withoutLastdigit int
-	withoutLastdigit = mode / 10
-	return withoutLastdigit%10 != 0
+	return digInPos(mode, 2) > 0
 }
 func isSms(mode int) bool {
-	var withoutTwoLastgit int
-	withoutTwoLastgit = mode / 100
-	return withoutTwoLastgit%10 != 0
+	return digInPos(mode, 3) > 0
+}
+func isHidingOut(mode int) bool {
+	//fmt.Printf("---------digInPos:---mode=%d, pos=%d, res=%d\n", mode, pos, res)
+	return digInPos(mode, 4) > 0
 }
 
 //------------------------
+//220421 21:18 see Progects/golang/220421_lastdig
+func digInPos(mode int, pos int) int {
+	if !(pos > 0) {
+		panic("digInPos: pos<1")
+	}
+	if mode < 0 {
+		panic("digInPos: mod<0")
+	}
+	var power10 = func(n int, p int) int { // return n^10
+		n = 1
+		for i := 0; i < p; i++ {
+			n = n * 10
+		}
+		return n
+	}
+	var res = (mode / power10(1, pos-1)) % 10 // in begin it gets the remainder, next it gets the last gigit of the remaider
+	//fmt.Printf("---------digInPos:---mode=%d, pos=%d, res=%d\n", mode, pos, res)
+	return res
+}
+
+//220422 15:24 for printProblem
+func debugLevel() int {
+	return digInPos(serverMode, 1)
+}
 
 func normSms(sms string) string {
 	const maxSmsLen = 20
@@ -213,9 +231,12 @@ func truncLetDir() {
 //220302 17:30 for saveAccountList (accounts.go)
 //220307 07:37 An example of result: "lang=en qqq=", that is the qqq key is empty.
 //220404 09:38 see var accountCompsSpr(="-;;-") var optionsSpr(=";--;") var optionKVspr(=";==;")
-func optsToStr(opts map[string]string) string {
+//220419 13:26 If whatKey=="" it gives all as "key;==;val;--;key;==;val ..."
+//If whatKey!="" it gives "key;==;val" where key==whatKey
+func optsToStr(opts map[string]string, whatKey string) string {
 	var res string
 	var err error
+	var valAsStr string
 	var keyCount int //220307 09:23
 
 	if opts == nil { //220307 08:58
@@ -225,10 +246,7 @@ func optsToStr(opts map[string]string) string {
 		panic(fmt.Sprintf("utils.go>optsToStr:len(opts) < %d", minOptions))
 	}
 
-	//fmt.Printf("-o-o-o-utils.go>OptsToStr: opts=%v\n", opts)
-
 	for key, val := range opts {
-		keyCount++
 		if err = goodString(key); err != nil {
 			panic("optToStr: Bad key:" + err.Error())
 		}
@@ -238,13 +256,19 @@ func optsToStr(opts map[string]string) string {
 		if err = goodString(val); err != nil {
 			panic("optToStr: bad value:" + err.Error())
 		}
+		if whatKey != "" {
+			if key != whatKey {
+				continue
+			}
+		}
 
-		//fmt.Printf("---------o-o-o-utils.go>OptsToStr: (%d)key=%s\n", keyCount, key)
+		valAsStr = fmt.Sprintf("%s%s%s", key, optionKVspr, val)
 
+		keyCount++
 		if keyCount == 1 {
-			res = fmt.Sprintf("%s%s%s", key, optionKVspr, val)
+			res = valAsStr
 		} else {
-			res = res + optionsSpr + fmt.Sprintf("%s%s%s", key, optionKVspr, val)
+			res = res + optionsSpr + valAsStr
 		}
 	}
 	return res
@@ -335,11 +359,25 @@ func convAccountTm(tm string) (res time.Time) {
 	return res
 }
 
+// 220421 21:57
 func printDebug(msg string) {
-	if serverMode != 2 {
+	if !isDebug(serverMode) {
 		return
 	}
-	fmt.Printf("DDDD-----%s\n", msg)
+	fmt.Printf("DEBUG-----%s\n", msg)
+}
+
+func printProblem(problem, msg string) {
+	var caller string
+	var file string
+	var line int
+	if !isDebug(serverMode) {
+		return
+	}
+	_, file, line, _ = runtime.Caller(1)
+	caller = fmt.Sprintf("%s(%d)", file, line)
+	fmt.Printf("%s-----%s;caller=%s\n", problem, msg, caller)
+	//time.Sleep(time.Second)
 }
 
 //22030404 07:25
@@ -402,4 +440,28 @@ func writeAllToFile(f *os.File, buf []byte) {
 		}
 		totalWriten = totalWriten + writen
 	}
+}
+
+//220420 11:53 For prolongeAccount
+func compareSlices(sl1, sl2 []byte) (bool, error) {
+	var l1 = len(sl1)
+	var l2 = len(sl2)
+	if l1 == 0 || l2 == 0 {
+		panic("compareSlices: byte slices must not be of zero length")
+	}
+	if l1 != l2 {
+		return false, fmt.Errorf("lengths is not equal")
+	}
+
+	for i := 0; i < l1; i++ {
+		if sl1[i] != sl2[i] {
+			return false, fmt.Errorf("In position %d is not equality", i)
+		}
+	}
+	return true, nil
+}
+
+func haltAll(msg string) {
+	fmt.Printf("The program has been halted at %v with:%s", time.Now(), msg)
+	os.Exit(111)
 }

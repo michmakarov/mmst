@@ -8,7 +8,7 @@
     </head>
 <body> 
 	<h4><br>
-	<i> :::mmst---1.0-1-gc983d9e---mich412-A320M-S2H-V2---220416_0724::: query num = {{.ReqNum}}</i><br>
+	<i> :::mmst---1.0-3-g6f70e8b---mich412-A320M-S2H-V2---220425_1742::: query num = {{.ReqNum}}</i><br>
 	<p> This button shows actual language and changes it.
 		<button id= "langchanging" onclick="changeLang()">{{.Lang}}</button><br>
 		There is not true supporting of different languages.<br>
@@ -49,7 +49,7 @@
 		Покажет Ваш аккаунт<br>
 		<a href="/myAccount">/myAaccount</a>
 	</div><br><!-- query /myAaccount -->
-</div><!-- id="maindiv" -->
+
 
 <div id="formdiv">
 	Вверху приведены "жесткие" ссылки, то есть те, которые Вы никак не можете изменить<br>
@@ -93,6 +93,8 @@
 		This shows the list of actual acounts on the site if you give a valid password.
 	<form action="/accounts" target="formres">
 		Password:<input type="text" name="pw" value="none"><br>
+		Field:<input type="text" name="field"><br>
+		Option:<input type="text" name="opt"><br>
 		<input type="submit" value="Submit">
 	</form> 
 	</div><!-- form /accounts -->
@@ -121,6 +123,8 @@
 
 </div><!-- formdiv -->
 <iframe id="formres" name="formres" width="100%" style="border:2px solid black;"></iframe>	
+</div><!-- maindiv -->
+
 </body>
 
 </html>

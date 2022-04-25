@@ -5,6 +5,7 @@
 //For control over proxies, TLS configuration, keep-alives, compression, and other settings, create a Transport: ...
 //Also from https://stackoverflow.com/questions/38822764/how-to-send-a-https-request-with-a-certificate-golang; second answer
 //220418 13:46 if the func setArgs() returns false the func setAgrsFromFile() will be invoked
+//220420 09:26 Adding the time measuring and versioning
 package main
 
 import (
@@ -51,7 +52,8 @@ Otherwise it returns 0 if sending a request takes place and 1 if no request was 
 In any case the program print a mesage to console.
 `
 
-func printResp(resp *http.Response) {
+//220420 09:23 Adding the time measuring
+func printResp(resp *http.Response, start time.Time) {
 	var err error
 	var buff *bytes.Buffer
 
@@ -63,41 +65,9 @@ func printResp(resp *http.Response) {
 		fmt.Printf("%s\n", buff.String())
 	}
 	resp.Body.Close()
-}
 
-//220416 09:42 It is from the mmst. This scheme seems very good.
-//That is it allows arbitrary amount of arguments and only one format of a command line.
-/* 220419 refused
-func setArgs() bool {
-	var res bool
-	for i := 1; i < len(os.Args); i++ {
-		var splitedArg = strings.Split(os.Args[i], "=")
-		if len(splitedArg) != 2 {
-			fmt.Printf("It are allowed arguments with format name=value, but is %v\n", os.Args[i])
-			os.Exit(1)
-		}
-		switch splitedArg[0] {
-		case "h":
-			fmt.Println(help)
-			os.Exit(0)
-		case "URI":
-			defurl = splitedArg[1]
-		case "METH":
-			if splitedArg[1] != defmeth {
-				fmt.Printf("It is allowed get method, but is %v\n", splitedArg[0])
-				os.Exit(1)
-			} else {
-				defmeth = splitedArg[1]
-			}
-		default:
-			fmt.Printf("There is not allowed option %v\n", splitedArg[0])
-			os.Exit(1)
-		}
-		res = true // if the switch did not halt the prog then the switch has establish a valid option
-	}
-	return res
+	fmt.Printf("----------------dur=%s\n", time.Since(start).String())
 }
-*/
 
 //220419 08:52
 func toTwo(sl []string, link string) []string {
@@ -138,7 +108,7 @@ func setAgrsFromFile() {
 	sc = bufio.NewScanner(f)
 	for sc.Scan() {
 		line = sc.Text()
-		if line[0] != byte('#') {
+		if (len(line) != 0) && (line[0] != '#') {
 			optSlice = strings.Split(line, "=")
 			if len(optSlice) == 1 {
 				panic(fmt.Sprintf("setAgrsFromFile: line %s is not comment and has not = character", line))
@@ -166,6 +136,7 @@ func setAgrsFromFile() {
 }
 
 func main() {
+	fmt.Println("mmclient 1.0; For help invoke with argument h")
 	if len(os.Args) > 1 { //if there is "h" option that the prog will halt
 		if os.Args[1] != "h" {
 			panic("Allowed only h argument")
@@ -203,13 +174,12 @@ func main() {
 		req.Header.Add("cookie", defcookies)
 	}
 
-	//req.Header.Add()
-
+	var start = time.Now()
 	if resp, err := client.Do(req); err != nil {
 		fmt.Printf("client.Do (for %s) err=%s\n", defurl, err.Error())
 		os.Exit(1)
 	} else {
-		printResp(resp)
+		printResp(resp, start)
 	}
 	//-------------------------------------------------
 

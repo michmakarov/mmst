@@ -118,30 +118,31 @@ func decrypt(abCipherText []byte) (pT []byte, err error) {
 //res==0 - the cookie value
 //res==1 - No cookie with name==cookieName
 //res==2 - problem with decrypting: Authentication failed (but the cookie with given name is)
-func getCookieVal(r *http.Request) (mess string, res byte) {
+func getCookieVal(r *http.Request) (mess []byte, res byte) {
 	var cookie *http.Cookie
 	var err error
 	var buff []byte
 	if cookie, err = r.Cookie(cookieName); err != nil {
 		res = 1
-		mess = err.Error()
+		mess = []byte(err.Error())
 		return
 	}
 
 	if buff, err = decrypt([]byte(cookie.Value)); err != nil {
 		res = 2
-		mess = err.Error()
+		mess = []byte(err.Error())
 		return
 	}
-	mess = string(buff)
-	printDebug(fmt.Sprintf("cookie.go>getCookieVal (or account name): mess=%v", buff))
+	mess = buff
+	//printDebug(fmt.Sprintf("cookie.go>getCookieVal (or account name): mess=%v", buff))
 	return
 }
 
 //220323 03:45
 //220325 09:41
 // It  renerates a account name, encrypts it as a cookie value and sets the cookie for transferring to a client
-func setCookie(w http.ResponseWriter) (accountName string) {
+//220420 11:30 The accountName is a slice of bytes and maust be such
+func setCookie(w http.ResponseWriter) (accountName []byte) {
 	var err error
 	var buff []byte = make([]byte, 8)
 	var cookieVal []byte
@@ -157,6 +158,6 @@ func setCookie(w http.ResponseWriter) (accountName string) {
 
 	http.SetCookie(w, &cookie)
 
-	accountName = string(buff)
+	accountName = buff
 	return
 }

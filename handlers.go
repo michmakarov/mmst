@@ -27,6 +27,7 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 //220118 07:31 220331 11:54
 //220405 10:45
 func accountsHandler(w http.ResponseWriter, r *http.Request) {
+	var whatField, whatOpt string
 	if r.FormValue("pw") != passWord {
 		msg := fmt.Sprintf("%s > bad password", getRequestBrief(r))
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
@@ -34,9 +35,13 @@ func accountsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(msg))
 		return
 	}
+
+	whatField = r.FormValue("field")
+	whatOpt = r.FormValue("opt")
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
-	w.Write([]byte(getAccountsAsHTML()))
+	w.Write([]byte(getAccountsAsHTML(whatField, whatOpt)))
 }
 
 //220113 04:43 Only sense of this to resolve the enigma of e_2 (see the history of 220113 04:17)
@@ -116,6 +121,7 @@ func changeLangHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //210111 05:50
+//220419 18:05
 func indHandler(w http.ResponseWriter, r *http.Request) {
 	type templData struct {
 		ReqNum int64
@@ -129,9 +135,12 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 	tD.ReqNum = flr.feelerCount
 	tD.Lang = getLang(r)
 
+	printProblem("problem_220415", fmt.Sprintf("indHandler: tD.Lang=%s", tD.Lang))
+
 	//220131 04:36 This nonsense has existed long ago and it had not been noticed up to the last friday.
 	// This phenomenon is such interesting that it deserve a name: langErr220131
-	if getLang(r) == "en" {
+
+	if tD.Lang == "en" { // 220419 18:24 And here I have span as a louse on a comb all day
 		fileName = "./html/ind_en.html"
 	} else {
 		fileName = "./html/ind_ru.html"
@@ -158,10 +167,6 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(200)
-
-	//if isDebug(serverMode) {
-	//	fmt.Printf("indHandler: RequestURI =%v, actualLang=%v\n", r.RequestURI, lang)
-	//}
 
 }
 
@@ -366,14 +371,14 @@ func myAccountHandler(w http.ResponseWriter, r *http.Request) {
 	//var err error
 	var msg, opts string
 	var acc *Account
-	var accName = r.Context().Value(AccNameCtxKey).(string)
-	if accName == "?" {
-		panic("myAccountHandler: no account name")
-	}
+	var accName = r.Context().Value(AccNameCtxKey).([]byte)
+	//if accName == "?" {//220422 06:29
+	//	panic("myAccountHandler: no account name")
+	//}
 	if acc = getAccount([]byte(accName)); acc == nil {
 		panic(fmt.Sprintf("myAccountHandler: no account of name %s", accName))
 	}
-	msg = fmt.Sprintf("<h2>Accunt %v or(in hex coding)\"%x\" </h2>", []byte(accName), accName)
+	msg = fmt.Sprintf("<h2>Accunt %v or(in hex coding)\"%x\" </h2>", accName, string(accName))
 	for key, val := range acc.Options {
 		opts = opts + fmt.Sprintf("<p>%s=%s</p>", key, val)
 	}
@@ -458,4 +463,39 @@ func showGeneralLogHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintln(w, "--------------------------")
 
+}
+
+//220422 14:48 Especially for resolving the problem_220415
+func problem_220415Handler(w http.ResponseWriter, r *http.Request) {
+	type templData struct {
+		ReqNum int64
+		Lang   string
+	}
+	var err error
+	var fileName = "problem_220415.html"
+	var templ *template.Template
+
+	var tD templData
+	tD.ReqNum = flr.feelerCount
+	tD.Lang = getLang(r)
+
+	if templ, err = template.ParseFiles(fileName); err != nil {
+		panic(fmt.Sprintf("indHandler_220108: parsing %s err=%s", fileName, err.Error()))
+	}
+
+	if err = templ.Execute(w, tD); err != nil {
+		panic(fmt.Sprintf("indHandler_220108: executing %s err=%s", fileName, err.Error()))
+	}
+}
+
+//2200425 17:57
+func longOperHandler(w http.ResponseWriter, r *http.Request) {
+	var msg string
+	var start = time.Now()
+	time.Sleep(3 * time.Second)
+	var dur = time.Since(start)
+	msg = fmt.Sprintf("The long operation here, dur=%v", dur)
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(200)
+	w.Write([]byte(msg))
 }

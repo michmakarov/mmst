@@ -1,5 +1,11 @@
 #This is file with parameters of the mmclient
 # the # character in the first position denotes a comment line
 #for details see ./mmclient h
-URI=https://www.dost346.ru:8080/q
-COOKIES=mmstSession=2272693429ad5ee1afd5a862e0601aa73b4a8b3c9ecd18645cc0f042a95b8595c29f646efbd2f450
+#URI=https://www.dost346.ru:8080/q
+#URI=https://www.dost346.ru:8080/myAccount
+#URI=https://www.dost346.ru:8080/accounts?pw=***not%20assigned%20yet***
+#URI=https://www.dost346.ru:8080/about?pw=***not%20assigned%20yet***
+COOKIES=mmstSession=b0028ae893af65a1e250e5a5977bb497951d87cdf172f704f111aa8f7341f6dfdb2814bccb9cb07d
+URI=http://localhost:8080/longOper
+#URI=https://www.dost346.ru:8080/myAccount
+

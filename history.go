@@ -170,4 +170,24 @@ _______08:35 In first queue there is want of a independent client
 _______08:57 But already there is such! see Progects/freelancer/mmclient
 Let's copy it under the git of the mmst
 _______09:08 Now it is Progects/freelancer/mmst/mmclient
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220419 13:19 the mmclient works
+The problem_220415 is with the mmclient. Opera, Chromium but not with FireFox
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220420 09:00 problem_220415
+On 41 (42): This is with the Chromium but is not with the FireFox
+On 44 the problem is not at all. The last is the most scaring.
+The plan: To play with the mmclient on both machines
+_______10:48 On 44 under the FireFox a new registration was demanded. Now there are four registration records - two for 44 and two for 42 (former 41).
+_______18:58 The fact is that there is doublicating registration records. It is wrong. Why is it occurring?
+Let's serialize the feeler by a mutex regardless that I do not see sense in it
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220422 06:20 problem_220415 For more successful catching it is need to do some actions
+_______13:38 Absence of the </div><!-- minediv --> tag was foud out in index files.
+But it should not cause the problem in any way.
+_______14:19 To say more precisely the last was revealed in copy of a unknown now index file namely in the problem_220415.html
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220425 13:10
+1. The /registerme is an ordinary request and must be worked out in common way
+2. So a mechanism of banning repetition of not performed request must be worked out instead of registration of the /registerme.
 `

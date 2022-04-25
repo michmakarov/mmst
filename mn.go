@@ -20,6 +20,7 @@ import (
 )
 
 const timeFormat = "20060102_150405"
+const serverMaxMode = 99999
 const maxLetters = 10
 const maxChars = 3000
 
@@ -38,13 +39,15 @@ var exitByError = true
 // third - sending sms when receiving a letter; see isDebug(mode int) bool, isHTTPS, isSms
 //So 1: http without sms with debug
 // 101 : http with sms with debug
+//220421 14:58 four - hiding the output to a file
+//that is 1001 - out to file, without sms, http, debug; see also func isHidingOut(mode int) bool;func digInPos(mode int, pos int) int
 var serverMode int
 
 var flr *feeler                  //220108 08:22
 var maxFrontLogSize = 1000000000 //220408 17:38 100Mb
 
 //var lang string = "ru"
-var passWord string = "***not assigned yet***" //220405 10:41
+var passWord string = "***not_assigned_yet***" //220405 10:41 220420 10:34:for there is obscurity with sending it as parameter
 
 //Those are default values. See func setArg()
 //var PG_CONN_STR = "postgres://kot_user:1qazXSW@@localhost:5433/mak_docker"
@@ -68,10 +71,10 @@ func main() {
 		return
 	}
 
+	setArgs()
 	redirectStd()
 	removeOldLogs()
 	creteGeneralHttpLogs()
-	setArgs()
 
 	mx := http.DefaultServeMux
 
@@ -95,6 +98,7 @@ func main() {
 	mx.HandleFunc("/showFeelerLog", showFeelerLogHandler)
 	mx.HandleFunc("/help", helpHandler)
 	mx.HandleFunc("/showGeneralLog", showGeneralLogHandler)
+	mx.HandleFunc("/longOper", longOperHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 
@@ -129,17 +133,18 @@ func main() {
 	//time.Sleep(time.Second)
 	*/
 	fmt.Printf("ver: %v\n", versionInfo)
-	fmt.Printf("The server will be listen at %v, mode=%v\n\n", listeningAddr, serverMode)
 	//-----220106 18:11
 
 	// Start Server
 	go func() {
 		switch isHTTPS(serverMode) {
 		case false:
+			fmt.Printf("The server (http) will be listen at %v, mode=%v\n\n", listeningAddr, serverMode)
 			if err := srv.ListenAndServe(); err != nil {
 				fmt.Printf("The server refused to work with error:%v\n", err.Error())
 			}
 		case true:
+			fmt.Printf("The server (https) will be listen at %v, mode=%v\n\n", listeningAddr, serverMode)
 			if err := srv.ListenAndServeTLS("cert", "key"); err != nil {
 				fmt.Printf("The server refused to work with error:%v\n", err.Error())
 			}
@@ -183,8 +188,12 @@ func getRequestCounter() uint32 {
 
 //220414 05:56
 func redirectStd() {
+	if !(isHidingOut(serverMode)) {
+		return
+	}
 	var err error
 	var nStd *os.File
+	//return //220420 18:31
 	if nStd, err = os.Create("out.txt"); err != nil {
 		panic(fmt.Sprintf("redirectStd:creating out.txt err=%s", err.Error()))
 	}

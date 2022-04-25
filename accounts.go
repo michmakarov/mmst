@@ -55,20 +55,27 @@ func getAccount(accName []byte) *Account {
 
 //220330 12:52
 //220330 15:02 It expands the functionallity of the getCookieVal
-func getAccount2(r *http.Request) (mess string, res byte) {
+//220421 14:18 it returns accName (mess) in dependence of res
+// 0 -> as it is given by getCookieVal; 1 -> "?"; 2->"??"; 3->"???"
+func getAccount2(r *http.Request) (mess []byte, res byte) {
 	var acc *Account
 	mess, res = getCookieVal(r)
-	if res != 0 {
-		return
+	switch res {
+	case 0:
+	case 1:
+		mess = []byte("?")
+	case 2:
+		mess = []byte("??")
+	default:
+		panic(fmt.Sprintf("getAccount2: getCookieVal returned illegal value %d", res))
 	}
+
 	acc = getAccount([]byte(mess))
 	if acc == nil {
 		res = 3
-		mess = fmt.Sprintf("getAccount: from %s was a valid cookie (val = %s) but an account absences", r.RemoteAddr, mess)
+		mess = []byte("???")
+		//mess = []byte(fmt.Sprintf("getAccount: from %s was a valid cookie (val = %s) but an account absences", r.RemoteAddr, mess))
 	}
-	//if isDebug(serverMode) {
-	//	fmt.Printf("DDDD---- getAccount2: res=%d; accName=%s\n", res, mess)
-	//}
 	return
 }
 
@@ -81,16 +88,17 @@ func getAccount2(r *http.Request) (mess string, res byte) {
 //Let it return "?" if there is any problem with getting the account name from the cookie
 //and "???" if from the cookie was obtained a valid name but it is not in the registration list.
 //220401 10:49 It extracts the account name from parameter. It panics if the namr is not
-func accountName(r *http.Request) string {
-	var accName string
-	accName = (r.Context().Value(AccNameCtxKey)).(string)
-	if accName == "" {
-		panic(fmt.Sprintf("accountName (accaouts.go):  the request gives an empty accName"))
-	}
-	if accName == "?" {
-		panic(fmt.Sprintf("accountName (accaouts.go):  the request gives accName==?"))
-	}
-	printDebug(fmt.Sprintf("accountName: URI=%s;accName=%v", r.RequestURI, []byte(accName)))
+//220420 18:21 All no bare functionality was removed
+func accountName(r *http.Request) []byte {
+	var accName []byte
+	accName = (r.Context().Value(AccNameCtxKey)).([]byte)
+	//if accName == []byte("") {
+	//	panic(fmt.Sprintf("accountName (accaouts.go):  the request gives an empty accName"))
+	//}
+	//if accName == []byte("?") {
+	//	panic(fmt.Sprintf("accountName (accaouts.go):  the request gives accName==?"))
+	//}
+	//printDebug(fmt.Sprintf("accountName: URI=%s;accName=%v", r.RequestURI, []byte(accName)))
 	return accName
 }
 
@@ -145,23 +153,36 @@ func setOptions(accName []byte, opts map[string]string) {
 //220331 12:48 almost refuse
 //220401 10:23 the r parameter carries now the account name
 func getOptions(r *http.Request) map[string]string {
-	var accName string
+	var accName []byte
+	var res map[string]string
 	accName = accountName(r)
-	return getOptionsByAcc([]byte(accName))
+	res = getOptionsByAcc(accName)
+	//printProblem("problem_220415", fmt.Sprintf("getOptions: accName=%v", string(accName)))
+
+	return res
 }
 
+//220423 07:10 compareSlices
 func getOptionsByAcc(accName []byte) (optsCopy map[string]string) {
+	var yes bool
 	accountsMtx.Lock()
 	defer accountsMtx.Unlock()
 	optsCopy = make(map[string]string)
 	for e := accounts.Front(); e != nil; e = e.Next() {
-		if string(e.Value.(*Account).Name) == string(accName) {
+		yes, _ = compareSlices(e.Value.(*Account).Name, accName)
+		//if string(e.Value.(*Account).Name) == string(accName) {
+		if yes {
 			for key, val := range e.Value.(*Account).Options {
 				optsCopy[key] = val
 			}
+		} else { //220422 16:34
+			panic(fmt.Sprintf("getOptionsByAcc: not found a registration record for %v\n----", accName))
+
 		}
+		//printProblem("problem_220415", fmt.Sprintf("getOptionsByAcc: for %v\n%v\n----", accName, optsCopy))
 		return
 	}
+
 	//panic(fmt.Sprintf("getCurrOptions: no account for %s", r.RequestURI))
 	//220416 07:20 problem_220415 In attempt to solve
 	panic(fmt.Sprintf("getOptionsByAcc: no options for %v", accName))
@@ -174,6 +195,9 @@ func getOptionsByAcc(accName []byte) (optsCopy map[string]string) {
 func getLang(r *http.Request) string {
 	var lang string
 	lang = getOptions(r)["lang"]
+
+	//printProblem("problem_220415", fmt.Sprintf("getLang: lang=%s", lang))
+
 	if lang == "" {
 		panic(fmt.Sprintf("getLang: The lang key is empty for %s", r.RequestURI))
 	}
@@ -184,23 +208,21 @@ func getLang(r *http.Request) string {
 //220325 07:34 It creates a new account if there is not one with given name aN
 //It take a remote address (RA) and an user agent (UA) as options
 //220331 12:32 if there is a new account the accounts are saved in file
-func regAccount(aN []byte, r *http.Request) {
-	//var accName string = accountName(r)
-	if getAccount(aN) != nil {
-		return
-	} else {
-		var opts = make(map[string]string)
-		opts["lang"] = "ru"
-		opts["RA"] = r.RemoteAddr
-		opts["UA"] = r.UserAgent()
-		opts["HOST"] = r.Host
-		var newAcc = &Account{aN, 1, opts, time.Now()}
-		accountsMtx.Lock()
-		accounts.PushFront(newAcc)
-		WriteToCommonLog(fmt.Sprintf("Accont (new) name=%v", []byte(aN)))
-		accountsMtx.Unlock()
-		//saveAccountList() //220405 09:19
-	}
+//func regAccount(aN []byte, r *http.Request) {
+//22042021:54 It ...
+func regAccount(accName []byte, r *http.Request) {
+	var newAcc *Account
+	accountsMtx.Lock()
+	var opts = make(map[string]string)
+	opts["lang"] = "ru"
+	opts["RA"] = r.RemoteAddr
+	opts["UA"] = r.UserAgent()
+	opts["HOST"] = r.Host
+	newAcc = &Account{accName, 1, opts, time.Now()}
+	//checkAcconts() //220420 14:21
+	accounts.PushFront(newAcc)
+	WriteToCommonLog(fmt.Sprintf("Accont (new) name=%v", accName))
+	accountsMtx.Unlock()
 }
 
 /* Removed 220331 12:35
@@ -230,6 +252,7 @@ func saveAccounts(accountsFileName string) {
 // <account name>;<account type>;<account options (see utils.optsToStr func)>;<time of registration>
 //220404 09:05 see var accountCompsSpr(="-;;-") var optionsSpr=(";--;")
 //has four substring separeted by the accountCompsSpr
+/* 220419 14:40 refused
 func saveAccountList() {
 	var f *os.File
 	var err error
@@ -253,6 +276,7 @@ func saveAccountList() {
 		f.WriteString(line)
 	}
 }
+*/
 
 //220307 16:38
 //220308 08:56 It is presumed and checked that the file consist of lines that have format that is described for saveAccountList function.
@@ -346,37 +370,98 @@ func delExpiredAccounts() (accs []string) {
 			accs = append(accs, byteSliceToStrRepresentation(e.Value.(*Account).Name))
 		}
 	}
-	if isDebug(serverMode) {
-		printDebug(fmt.Sprint("delExpiredAccounts:%v", accs))
-	}
+	//if isDebug(serverMode) {
+	//	printDebug(fmt.Sprint("delExpiredAccounts:%v", accs))
+	//}
 	return
 }
 
 //220330 15:43 It sets the date registration to now if it found an account
-func prolongeAccount(accName string) {
+//220420 12:28 Panics if no accName
+func prolongeAccount(accName []byte) {
 	accountsMtx.Lock()
 	defer accountsMtx.Unlock()
 	for e := accounts.Front(); e != nil; e = e.Next() {
-		if string(e.Value.(*Account).Name) == string(accName) {
+		if b, _ := compareSlices(e.Value.(*Account).Name, accName); b {
 			e.Value.(*Account).RegTm = time.Now()
+			return
 		}
 	}
-
+	haltAll(fmt.Sprintf("prolongeAccount: not found %v", accName))
 }
 
 //220405 11:00 Without the mutex
-func getAccountsAsHTML() (res string) {
+//220419 14:27 It is seem that the mutex is needed for a situation that someone changes the language is possible
+//And the output is very bulk so let be whatFielf, whatOpt
+func getAccountsAsHTML(whatField string, whatOpt string) (res string) {
 	var account *Account
 	var aCS = accountCompsSpr
+
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+
 	res = "<p>"
 
 	for e := accounts.Front(); e != nil; e = e.Next() {
 		account = e.Value.(*Account)
-		//line = fmt.Sprintf("%s;%d;%s;%s\n", account.Name, account.Tp, optsToStr(account.Options), account.RegTm.Format("20060102_150405"))
-		//				   Nm  Tp  op  Tm
-		res = res + fmt.Sprintf("%s%s%d%s%s%s%s\n", byteSliceToStrRepresentation(account.Name), aCS, account.Tp, aCS, optsToStr(account.Options), aCS, account.RegTm.Format("20060102_150405"))
+		switch whatField {
+		case "name":
+			res = res + fmt.Sprintf("%s%s%s\n", byteSliceToStrRepresentation(account.Name), aCS, optsToStr(account.Options, whatOpt))
+		default:
+			//line = fmt.Sprintf("%s;%d;%s;%s\n", account.Name, account.Tp, optsToStr(account.Options), account.RegTm.Format("20060102_150405"))
+			//					    Nm  Tp  op  Tm
+			res = res + fmt.Sprintf("%s%s%d%s%s%s%s\n", byteSliceToStrRepresentation(account.Name), aCS, account.Tp, aCS, optsToStr(account.Options, whatOpt), aCS, account.RegTm.Format("20060102_150405"))
+		}
 		res = res + "<br>"
 	}
 	res = res + "</p>"
 	return
+}
+
+//220420 12:30 Accounts may not exist. But if they are they must have not zero filds
+func checkAcconts() {
+	var accName []byte
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+	if accounts.Len() == 0 {
+		return
+	}
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		accName = e.Value.(*Account).Name
+		if len(accName) == 0 {
+			haltAll(fmt.Sprintf("there is account without Name"))
+		}
+		if e.Value.(*Account).Tp == 0 {
+			haltAll(fmt.Sprintf("there is account without Tp"))
+		}
+		if e.Value.(*Account).RegTm.IsZero() {
+			haltAll(fmt.Sprintf("there is account without RegTm"))
+		}
+		checkAccMap(accName, e.Value.(*Account).Options)
+	}
+}
+
+//220420 12:58
+func checkAccMap(accName []byte, m map[string]string) {
+	var ok bool
+	var val string
+
+	val, ok = m["lang"]
+	if !ok {
+		haltAll(fmt.Sprintf("checkAccMap: for %v no lang key", accName))
+	}
+	if val != "ru" || val != "en" {
+		haltAll(fmt.Sprintf("checkAccMap: invalid value fo lang %s", val))
+	}
+
+	val, ok = m["RA"]
+	if !ok {
+		haltAll(fmt.Sprintf("checkAccMap: for %v no RA key", accName))
+	}
+
+	val, ok = m["UA"]
+	if !ok {
+		haltAll(fmt.Sprintf("checkAccMap: for %v no UA key", accName))
+	}
+
 }

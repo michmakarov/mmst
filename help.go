@@ -10,6 +10,19 @@ var help = `
 </head>
 <body>
 <h1>The http server of the mmst site has next features.</h1>
+<h2>Invoking and mode.</h2>
+The server is CLI program that has next command line for starting:<br>
+prog mode=<mode value>; for example ./mmst mode=1<br>
+Here the prog stands for the path to a executable file of the server.<br>
+The mode is a number in decimal notation, where each decimal place that is numbered from less significal to more ones and first has number 0<br>
+The figure in a decimal place codes some feature so that 0 tells absence of the feature.<br>
+So, "prog mode=0" starts the server with features that are switched off<br>
+There are next features:<br>
+<h3>0</h3> - debugging. It codes rules of printing out a diagnostic messages.<br>
+Particularly, if it value > 0, the lines of the front log will be doublets to the console (or to a file that stands for the console, see farther)<br>
+<h3>1</h3> - HTTP or HTTPS. So "prog mode=10" starts HTTPS sever without debuging.<br>
+<h3>2</h3> sending sms when receiving a letter.<br>
+<h3>2</h3> redirecting stdout and stderr to a file with name "out.txt".<br>
 <h2>VERSIONING</h2>
 A version of the server is a string with fields divided by "---" (the three going in succession letters "-")<br>
 For example "mmst---0.1-1-g7bfa24b---mich412-A320M-S2H-V2---220411_1704"

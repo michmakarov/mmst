@@ -1,20 +1,9 @@
-utils.go>removeOldLogs: Feeler20220412_171608.log was removed
+utils.go>removeOldLogs: Feeler20220421_222601.log was removed
 utils.go>removeOldLogs: general.log was removed
 utils.go>removeOldLogs: http.log was removed
-ver: version not assigned yet
-The server will be listen at 0.0.0.0:8080, mode=1
+ver: mmst---1.0-3-g6f70e8b---mich412-A320M-S2H-V2---220421_2226
+The server will be listen at 0.0.0.0:8080, mode=1001
 
-DATE=20220414_062149--NUM=1--ACC=accRes==2--URI=/--RA=[::1]:36138
-DATE=20220414_062150--NUM=2--ACC=accRes==2--URI=/registerme--RA=[::1]:36138
-DATE=20220414_062153--NUM=3--ACC=[250 201 169 154 1 110 224 173]--URI=/--RA=[::1]:36138
-DATE=20220414_062153--NUM=4--ACC=[250 201 169 154 1 110 224 173]--URI=/css--RA=[::1]:36138
-DATE=20220414_062153--NUM=5--ACC=[250 201 169 154 1 110 224 173]--URI=/mmsite_script--RA=[::1]:36138
-DATE=20220414_062323--NUM=6--ACC=[250 201 169 154 1 110 224 173]--URI=/showFeelerLog?substr=--RA=[::1]:36162
-DATE=20220414_062328--NUM=7--ACC=[250 201 169 154 1 110 224 173]--URI=/showGeneralLog?substr=--RA=[::1]:36162
-DATE=20220414_062349--NUM=8--ACC=[250 201 169 154 1 110 224 173]--URI=/showFeelerLog?substr=--RA=[::1]:36168
-DATE=20220414_062502--NUM=9--ACC=[250 201 169 154 1 110 224 173]--URI=/help--RA=[::1]:36174
-DATE=20220414_063135--NUM=10--ACC=[250 201 169 154 1 110 224 173]--URI=/showFeelerLog?substr=--RA=[::1]:36210
-DATE=20220414_063159--NUM=11--ACC=[250 201 169 154 1 110 224 173]--URI=/showFeelerLog?substr=--RA=[::1]:36214
 The server refused to work with error:http: Server closed
 onShutdown starts ...
  ... onShutdown ends 
