@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"bufio"
+	//"net"
 )
 
 var buffs [][]byte
@@ -122,7 +123,8 @@ func changeLangHandler(w http.ResponseWriter, r *http.Request) {
 
 //210111 05:50
 //220419 18:05
-func indHandler(w http.ResponseWriter, r *http.Request) {
+//220504 10:48 is renamed to "mainHandler"
+func mainHandler(w http.ResponseWriter, r *http.Request) {
 	type templData struct {
 		ReqNum int64
 		Lang   string
@@ -135,15 +137,15 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 	tD.ReqNum = flr.feelerCount
 	tD.Lang = getLang(r)
 
-	printProblem("problem_220415", fmt.Sprintf("indHandler: tD.Lang=%s", tD.Lang))
+	printProblem("problem_220415", fmt.Sprintf("mainHandler: tD.Lang=%s", tD.Lang))
 
 	//220131 04:36 This nonsense has existed long ago and it had not been noticed up to the last friday.
 	// This phenomenon is such interesting that it deserve a name: langErr220131
 
 	if tD.Lang == "en" { // 220419 18:24 And here I have span as a louse on a comb all day
-		fileName = "./html/ind_en.html"
+		fileName = "./html/main_en.html"
 	} else {
-		fileName = "./html/ind_ru.html"
+		fileName = "./html/main_ru.html"
 	}
 	/* 220415 09:43 This stratum is unnecessary as all panics are intercepted by the feeler.
 	defer func() {
@@ -251,20 +253,18 @@ func stopHandler(w http.ResponseWriter, r *http.Request) {
 	os.Exit(0)
 }
 
+//220427 09:45
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	var usr *user.User
 	var hostName string
 	var err error
 	var msg string
-	defer func() {
-		if rec := recover(); rec != nil {
-			panicMessage := fmt.Sprintf("(Addr=%v) panic:%v", r.RemoteAddr, rec)
-			w.Header().Add("Content-Type", "text/plain; charset=utf-8")
-			w.WriteHeader(500)
-			w.Write([]byte(panicMessage))
-			fmt.Println("!!!!!!!aboutHandler panics:", panicMessage)
-		}
-	}()
+
+	var RA string
+	var connSt string
+
+	var conns string // 220427 10:13 the current connection views as they presents from  the var currConn and the func GetConn
+	conns = fmt.Sprintf("(%v----%v", currConn.conn, GetConn(r))
 
 	if r.FormValue("pw") != passWord {
 		panic(fmt.Sprintf("aboutHandler panic: wrong password"))
@@ -276,8 +276,11 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	if hostName, err = os.Hostname(); err != nil {
 		panic(fmt.Sprintf("aboutHandler panic of getting host name:%v", err.Error()))
 	}
-	msg = fmt.Sprintf("<p>Uid=%v,<br> login==%v,<br> name=%v,<br> HomeDir=%v,<br>Host=%v</p>",
-		usr.Uid, usr.Username, usr.Name, usr.HomeDir, hostName)
+	RA = currConn.conn.RemoteAddr().String()
+	connSt = currConn.state.String()
+
+	msg = fmt.Sprintf("<p>Uid=%v,<br> login==%v,<br> name=%v,<br> HomeDir=%v,<br>Host=%v,<br>RA=%v,<br>state=%v,<br>conn=%v</p>",
+		usr.Uid, usr.Username, usr.Name, usr.HomeDir, hostName, RA, connSt, conns)
 
 	w.Header().Add("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(200)
@@ -498,4 +501,33 @@ func longOperHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
+}
+
+//220504 10:50 returns content of the mmst/html/ind.html, that now is "/" page and points at the mainHandler ("/main")
+func indHandler(w http.ResponseWriter, r *http.Request) {
+	type templData struct {
+		ReqNum int64
+		Ver    string
+	}
+	var err error
+	var fileName string
+	var templ *template.Template
+
+	var tD templData
+	tD.ReqNum = flr.feelerCount
+	tD.Ver = versionInfo
+
+	fileName = "./html/ind.html"
+
+	if templ, err = template.ParseFiles(fileName); err != nil {
+		panic(fmt.Sprintf("indHandler: parsing %s err=%s", fileName, err.Error()))
+	}
+
+	if err = templ.Execute(w, tD); err != nil {
+		panic(fmt.Sprintf("indHandler: executing %s err=%s", fileName, err.Error()))
+	}
+
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(200)
+
 }

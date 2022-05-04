@@ -61,7 +61,7 @@ echo 5: the removing old logs and nohup.out was successful.
 fi
 
 
-
+echo 6: starting of new version is not yet, as I do not know how to do it
 
 #ssh root@95.213.191.152 "cd mmst; ./mmst mode=11 &"
 #if [ $? != 0 ]; then 

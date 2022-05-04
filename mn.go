@@ -16,13 +16,29 @@ import (
 	"syscall"
 	"time"
 
+	"net"
 	"runtime"
 )
+
+//220426 14:16 See also the history and (this date record) SaveConnInContext, GetConn, ConnContextKey
+type contextKey struct {
+	key string
+}
+
+//240427 08:51 See saveConnChanging
+type CurrentConnection struct {
+	conn  net.Conn
+	state http.ConnState
+}
+
+var ConnContextKey = &contextKey{"mmst-conn"}
 
 const timeFormat = "20060102_150405"
 const serverMaxMode = 99999
 const maxLetters = 10
 const maxChars = 3000
+
+var currConn = &CurrentConnection{}
 
 //var appName = "---mmsite from 220131_1448---" //It is assigned in actual value by b.sh
 
@@ -99,6 +115,7 @@ func main() {
 	mx.HandleFunc("/help", helpHandler)
 	mx.HandleFunc("/showGeneralLog", showGeneralLogHandler)
 	mx.HandleFunc("/longOper", longOperHandler)
+	mx.HandleFunc("/main", mainHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 
@@ -109,6 +126,8 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		ErrorLog:     servLogger,
+		ConnContext:  SaveConnInContext, //220426
+		ConnState:    saveConnChanging,  //220427 08:41
 	}
 
 	srv.RegisterOnShutdown(onShutDown)
@@ -166,7 +185,7 @@ func waitForShutdown(srv *http.Server) {
 
 	// Block until we receive our signal.
 	incomeSig = <-interruptChan
-	WriteToCommonLog(fmt.Sprintf("waitForShutdown: a signal was received: %s", incomeSig.String()))
+	WriteToCommonLog(fmt.Sprintf("waitForShutdown: a signal was received: %s", incomeSig.String()), -1)
 
 	// Create a deadline to wait for.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -199,4 +218,23 @@ func redirectStd() {
 	}
 	os.Stdout = nStd
 	os.Stderr = nStd
+}
+
+func SaveConnInContext(ctx context.Context, c net.Conn) context.Context {
+	return context.WithValue(ctx, ConnContextKey, c)
+}
+
+func GetConn(r *http.Request) net.Conn {
+	return r.Context().Value(ConnContextKey).(net.Conn)
+}
+
+//220427 08:30
+func saveConnChanging(conn net.Conn, cs http.ConnState) {
+	var msg string
+	if currConn.conn != conn {
+		msg = fmt.Sprintf("There is changing state of connection from %s (new state=%s)", conn.RemoteAddr().String(), cs.String())
+		WriteToCommonLog(msg, -1)
+	}
+	currConn.conn = conn
+	currConn.state = cs
 }

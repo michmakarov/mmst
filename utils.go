@@ -465,3 +465,21 @@ func haltAll(msg string) {
 	fmt.Printf("The program has been halted at %v with:%s", time.Now(), msg)
 	os.Exit(111)
 }
+
+//220504 11:49 (revision) It expects the RA of format <something>:<port> and returns <something>
+//It panics if in the RA no ":" character
+func IPFromRA(RA string) string {
+	sl := strings.Split(RA, ":")
+	if len(sl) < 2 {
+		panic(fmt.Sprintf("IPFromRA: wrong (no :) RA=%s", RA))
+	}
+	return stringSliceToString(sl[0:])
+}
+
+//220504 11:55
+func stringSliceToString(sl []string) (res string) {
+	for _, val := range sl {
+		res = res + val
+	}
+	return
+}

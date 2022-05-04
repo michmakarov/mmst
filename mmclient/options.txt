@@ -5,7 +5,9 @@
 #URI=https://www.dost346.ru:8080/myAccount
 #URI=https://www.dost346.ru:8080/accounts?pw=***not%20assigned%20yet***
 #URI=https://www.dost346.ru:8080/about?pw=***not%20assigned%20yet***
-COOKIES=mmstSession=b0028ae893af65a1e250e5a5977bb497951d87cdf172f704f111aa8f7341f6dfdb2814bccb9cb07d
-URI=http://localhost:8080/longOper
+URI=https://www.dost346.ru:8080/registerme
+#COOKIES=mmstSession=b0028ae893af65a1e250e5a5977bb497951d87cdf172f704f111aa8f7341f6dfdb2814bccb9cb07d
+#URI=http://localhost:8080/longOper
 #URI=https://www.dost346.ru:8080/myAccount
-
+#COOKIES=mmstSession=71271ed2d55db67942fa6dc4609a3cca4108649861078fb33b575a6805969f9dc2d9cb1c59e20cf4;
+#COOKIES=mmstSession=dff024a2b16d1b0116c6b17eba8545a6e2a29e372e2880c79bbf8b52905db0698ba9e34b828f7768;

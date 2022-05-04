@@ -89,3 +89,18 @@ func (pl *PerfList) inPerforming(r *http.Request) bool {
 	pl.mtx.Unlock()
 	return false
 }
+
+func (pl *PerfList) String() string {
+	var s string
+	var pr *PerformRec
+	var dur time.Duration
+	pl.mtx.Lock()
+	for e := pl.notDone.Front(); e != nil; e = e.Next() {
+		pr = e.Value.(*PerformRec)
+		dur = time.Since(pr.Start)
+		s = fmt.Sprintf("", pr.AccName, pr.Start.Format(timeFormat), dur)
+	}
+
+	pl.mtx.Unlock()
+	return s
+}

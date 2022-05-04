@@ -190,4 +190,29 @@ _______14:19 To say more precisely the last was revealed in copy of a unknown no
 220425 13:10
 1. The /registerme is an ordinary request and must be worked out in common way
 2. So a mechanism of banning repetition of not performed request must be worked out instead of registration of the /registerme.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220426 09:10
+1. What is the "banning repetition of not performed request"?
+As if in dealing strictly and only with the http protocol that "repetition" simply impossible.
+It takes sense if two requests are "the same" in a context that is laying out of the http protocol.
+For example, if there is a working session, that exists independently of requests.
+In our case there is such thing, the account.
+Thus the source address is essential attribute of a http request but it is not so for the account.
+We may construct (by many way, I think) and (consequently) speak about many http request belonging to one account.
+So the "banning repetition of not performed request" has sence and all ok
+2. How to know up an underlying net connection of a given http request?
+As if only through the context of a request.
+So, https://stackoverflow.com/questions/29531993/accessing-the-underlying-socket-of-a-net-http-response
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+220428 11:11
+1. About an underlying net connection of a given http request. See previous, 2.
+	As if the conclusion is wrong. The http.Server takes the marvellous callback function ConnState
+2. What is a repetitive call of "/registerme"? If some agent has not provided the (valid) cookie he may has done it deliberately.
+	I think the moment must be checked and one or the other decision must be taken.
+_______13:53 So it is turned that a tag (that is accounting at all) does not preserve from multiple registration of the same agent
+if it can and want to forge its IP. And the NAT here does not do at all.
+_______14:17 Although it is very interesting how the NAT deals with the source IP of IP packets
+220503 07:07 The question: For web crawler is it matter wat protocol is used, with the TSL or without? Answer: no if it is a contemporary crawler.
+_______07:31 The actual task is to open needed pages for web crawlers.
+
 `

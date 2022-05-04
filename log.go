@@ -14,7 +14,7 @@ var logger, servLogger *log.Logger
 func creteGeneralHttpLogs() {
 	var lf, sLf *os.File
 	var err error
-	var pref = time.Now().Format(timeFormat)
+	var pref = time.Now().Format(timeFormat) + "---"
 	if lf, err = os.Create(generalLogFileName); err != nil {
 		panic(fmt.Sprintf("Error of creating a log file=%s\n", err.Error()))
 	}
@@ -23,12 +23,15 @@ func creteGeneralHttpLogs() {
 	}
 	logger = log.New(lf, pref, log.Lshortfile)
 	servLogger = log.New(sLf, pref, log.Lshortfile)
-	WriteToCommonLog("CommonLog Started\n")
+	WriteToCommonLog("CommonLog Started\n", -1)
 	WriteToServLog("ServLog Started\n")
 }
-func WriteToCommonLog(msg string) {
+func WriteToCommonLog(msg string, calldepth int) {
 	var err error
-	if err = logger.Output(2, msg); err != nil {
+	if calldepth < 0 || calldepth > 4 {
+		calldepth = 2
+	}
+	if err = logger.Output(calldepth, msg); err != nil {
 		panic(fmt.Sprintf("WriteToCommonLog err=%s\n", err.Error()))
 	}
 }

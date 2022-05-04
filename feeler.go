@@ -102,23 +102,27 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var accs = delExpiredAccounts()
 		if len(accs) != 0 {
 			var msg = fmt.Sprintf("deleting expired %v", accs)
-			WriteToCommonLog(msg)
+			WriteToCommonLog(msg, -1)
 		}
 
+	}
+
+	if reqAnswered(w, r) {
+		return
 	}
 
 	accName, accRes = getAccount2(r) //getCookieVal(r)
 
 	f.WriteFLog(r, accName) //220408 08:29 (220322-account : confirmation) The feeler log fixes all incoming requests.
 
-	if r.URL.Path == "/q" {
-		s = fmt.Sprintf("There is /q debug request; accName=%v; accres=%d; RA=%s", accName, accRes, r.RemoteAddr)
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(200)
-		w.Write([]byte(s))
-		fmt.Println(s)
-		return
-	}
+	//if r.URL.Path == "/q" {
+	//	s = fmt.Sprintf("There is /q debug request; accName=%v; accres=%d; RA=%s", accName, accRes, r.RemoteAddr)
+	//	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	//	w.WriteHeader(200)
+	//	w.Write([]byte(s))
+	//	fmt.Println(s)
+	//	return
+	//}
 
 	if perfList.inPerforming(r) {
 		s = fmt.Sprintf("%s (from %s) is in performing. You must wait", r.RequestURI, r.RemoteAddr)
@@ -132,23 +136,31 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path == "/registerme" { //220329
 		if accRes == 0 { // a repeated request for registration
-			prolongeAccount(accName)
+			//prolongeAccount(accName)
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			w.WriteHeader(200)
-			w.Write([]byte(CookieIsStill))
+			w.Write([]byte(youHasAccAlready))
 			return
 		} else {
-			accName = setCookie(w)
-			regAccount(accName, r)
-			//f.BlockRA(r.RemoteAddr)
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			w.WriteHeader(200)
-			w.Write([]byte(CookieIs)) //220420 19 58 Next to cookie will be sent and receiving atempts reristration from that ip wll must be refusing until receiving a valid cookie
-			return
+			if IPHasAccount(IPFromRA(r.RemoteAddr)) == nil {
+				accName = setCookie(w)
+				regAccount(accName, r)
+				//f.BlockRA(r.RemoteAddr)
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				w.WriteHeader(200)
+				w.Write([]byte(CookieIs)) //220420 19 58 Next to cookie will be sent and receiving atempts reristration from that ip wll must be refusing until receiving a valid cookie
+				return
+			} else {
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				w.WriteHeader(200)
+				w.Write([]byte(yourIPHasAcc))
+				return
+			}
 		}
-	} else {
+	} else { // r.URL.Path != "/registerme"
 		if accRes == 0 { //220330 15:56 there is an account; all Ok
 			//f.UnblockRA(r.RemoteAddr)
+			prolongeAccount(accName)
 			goto toMultiplexer
 		} else { //the 400  will be passed to the client
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")

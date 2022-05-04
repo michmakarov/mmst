@@ -221,7 +221,7 @@ func regAccount(accName []byte, r *http.Request) {
 	newAcc = &Account{accName, 1, opts, time.Now()}
 	//checkAcconts() //220420 14:21
 	accounts.PushFront(newAcc)
-	WriteToCommonLog(fmt.Sprintf("Accont (new) name=%v", accName))
+	WriteToCommonLog(fmt.Sprintf("Accont (new) name=%v", accName), -1)
 	accountsMtx.Unlock()
 }
 
@@ -306,7 +306,7 @@ func restoreAccounts() {
 		panic(fmt.Sprintf("restoreAccounts: getting info of %s; err=%s", accountsFileName, err.Error()))
 	}
 	if fi.Size() > int64(accountsFileMaxSize) {
-		WriteToCommonLog(fmt.Sprintf("Size of %s is more than %d; accounts will be accounted newly", accountsFileName, accountsFileMaxSize))
+		WriteToCommonLog(fmt.Sprintf("Size of %s is more than %d; accounts will be accounted newly", accountsFileName, accountsFileMaxSize), -1)
 		return
 	}
 
@@ -464,4 +464,22 @@ func checkAccMap(accName []byte, m map[string]string) {
 		haltAll(fmt.Sprintf("checkAccMap: for %v no UA key", accName))
 	}
 
+}
+
+//220428 12:47
+//It searches the accounts for item that contain a given name end return the account name or nil
+func IPHasAccount(ip string) (accName []byte) {
+	var acc *Account
+	accountsMtx.Lock()
+	defer accountsMtx.Unlock()
+	if accounts.Len() == 0 {
+		return
+	}
+	for e := accounts.Front(); e != nil; e = e.Next() {
+		acc = e.Value.(*Account)
+		if IPFromRA(acc.Options["RA"]) == ip {
+			accName = acc.Name
+		}
+	}
+	return
 }
