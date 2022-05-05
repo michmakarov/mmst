@@ -111,6 +111,7 @@ func main() {
 	mx.HandleFunc("/css", cssHandler)
 
 	mx.HandleFunc("/myAccount", myAccountHandler)
+	mx.HandleFunc("/deleteMyAccount", deleteMyAccountHandler)
 	mx.HandleFunc("/showFeelerLog", showFeelerLogHandler)
 	mx.HandleFunc("/help", helpHandler)
 	mx.HandleFunc("/showGeneralLog", showGeneralLogHandler)
@@ -124,7 +125,7 @@ func main() {
 		Handler:      flr,
 		Addr:         listeningAddr,
 		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		WriteTimeout: 20 * time.Second,
 		ErrorLog:     servLogger,
 		ConnContext:  SaveConnInContext, //220426
 		ConnState:    saveConnChanging,  //220427 08:41

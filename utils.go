@@ -468,18 +468,33 @@ func haltAll(msg string) {
 
 //220504 11:49 (revision) It expects the RA of format <something>:<port> and returns <something>
 //It panics if in the RA no ":" character
+//220505 14:38 (revision)
+//1. Life of simple programmer is hard and not beautiful!
 func IPFromRA(RA string) string {
-	sl := strings.Split(RA, ":")
-	if len(sl) < 2 {
-		panic(fmt.Sprintf("IPFromRA: wrong (no :) RA=%s", RA))
+	var posRightestCol int
+	//sl := strings.Split(RA, ":")
+	//if len(sl) < 2 {
+	//	panic(fmt.Sprintf("IPFromRA: wrong (no :) RA=%s", RA))
+	//}
+	posRightestCol = len(RA) - 1
+	for i := posRightestCol; i > -1; i-- {
+		posRightestCol = i
+		if RA[i] == ':' {
+			break
+		}
 	}
-	return stringSliceToString(sl[0:])
+	if posRightestCol < 5 {
+		panic(fmt.Sprintf("IPFromRA: wrong (posRightestCol of RA<5) RA=%s", RA))
+	}
+	printDebug(fmt.Sprintf("utils.IPFromRA: RA=%s, RA[0:posRightestCol]=%s, posRightestCol=%d", RA, RA[0:posRightestCol], posRightestCol))
+	return RA[0:posRightestCol]
 }
 
 //220504 11:55
-func stringSliceToString(sl []string) (res string) {
-	for _, val := range sl {
-		res = res + val
-	}
-	return
-}
+//220505 14:52 It is wrong and at all not needed
+//func stringSliceToString(sl []string) (res string) {
+//	for _, val := range sl {
+//		res = res + val
+//	}
+//	return
+//}

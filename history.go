@@ -212,7 +212,9 @@ So, https://stackoverflow.com/questions/29531993/accessing-the-underlying-socket
 _______13:53 So it is turned that a tag (that is accounting at all) does not preserve from multiple registration of the same agent
 if it can and want to forge its IP. And the NAT here does not do at all.
 _______14:17 Although it is very interesting how the NAT deals with the source IP of IP packets
-220503 07:07 The question: For web crawler is it matter wat protocol is used, with the TSL or without? Answer: no if it is a contemporary crawler.
+220503 07:07 The question: For web crawler is it matter what protocol is used, with the TSL or without? Answer: no if it is a contemporary crawler.
 _______07:31 The actual task is to open needed pages for web crawlers.
+******************************************************************************
+220505 07:46 Ha! What is difference between a browser and my mmclient?
 
 `

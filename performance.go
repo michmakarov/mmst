@@ -98,7 +98,7 @@ func (pl *PerfList) String() string {
 	for e := pl.notDone.Front(); e != nil; e = e.Next() {
 		pr = e.Value.(*PerformRec)
 		dur = time.Since(pr.Start)
-		s = fmt.Sprintf("", pr.AccName, pr.Start.Format(timeFormat), dur)
+		s = fmt.Sprintf("", pr.R.RemoteAddr, pr.R.RequestURI, pr.Start.Format(timeFormat), dur)
 	}
 
 	pl.mtx.Unlock()

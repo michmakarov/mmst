@@ -62,7 +62,7 @@ func (f *feeler) WriteFLog(r *http.Request, accName []byte) {
 	//if _, err = f.log.WriteString(s); err != nil {
 	//	panic(fmt.Sprintf("writing into feeler log file err=%s", err.Error()))
 	//}
-	s = fmt.Sprintf("DATE=%s--NUM=%d--ACC=%v--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.feelerCount, accName, r.RequestURI, r.RemoteAddr)
+	s = fmt.Sprintf("DATE=%s--NUM=%d--ACC=%v--URI=%s--RA=%s\n", time.Now().Format("20060102_150405"), f.getReqCount(), accName, r.RequestURI, r.RemoteAddr)
 
 	f.mtx.Lock()
 	defer f.mtx.Unlock()
@@ -107,22 +107,13 @@ func (f *feeler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if reqAnswered(w, r) {
-		return
-	}
-
-	accName, accRes = getAccount2(r) //getCookieVal(r)
+	accName, accRes = convertCookieToAccName(r) //getCookieVal(r)
 
 	f.WriteFLog(r, accName) //220408 08:29 (220322-account : confirmation) The feeler log fixes all incoming requests.
 
-	//if r.URL.Path == "/q" {
-	//	s = fmt.Sprintf("There is /q debug request; accName=%v; accres=%d; RA=%s", accName, accRes, r.RemoteAddr)
-	//	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	//	w.WriteHeader(200)
-	//	w.Write([]byte(s))
-	//	fmt.Println(s)
-	//	return
-	//}
+	if reqAnswered(w, r, accName, accRes) {
+		return
+	}
 
 	if perfList.inPerforming(r) {
 		s = fmt.Sprintf("%s (from %s) is in performing. You must wait", r.RequestURI, r.RemoteAddr)
@@ -254,3 +245,8 @@ func (f feeler) getBlocked() []string {
 	return f.blockedRA
 }
 ------------*/
+
+//220504 19:220
+func (f feeler) getReqCount() int64 {
+	return atomic.LoadInt64(&f.feelerCount)
+}

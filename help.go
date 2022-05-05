@@ -6,17 +6,38 @@ var help = `
 <head>
 <style>
   h1,h2,h3 {margin-bottom: 0px;}
-  a {margin-left: 150px;}
+  .menuitem {margin-left: 150px;}
+  .point {margin-left: 50px;}
 </style>
 </head>
 <body>
 <h1>The http server of the mmst site has next features.</h1>
-	<a href="#h2.1">Invoking and mode.</a><br>
-	<a href="#h2.2">VERSIONING</a><br>
-	<a href="#h2.3">FRONT LOG</a><br>
-	<a href="#h2.4">GENERAL LOG</a><br>
-	<a href="#h2.5">ACCOUNTING</a><br>
+	<a class="menuitem" href="#h2.0">Overview (common notes).</a><br>
+	<a class="menuitem" href="#h2.1">Invoking and mode.</a><br>
+	<a class="menuitem" href="#h2.2">VERSIONING</a><br>
+	<a class="menuitem" href="#h2.3">FRONT LOG</a><br>
+	<a class="menuitem" href="#h2.4">GENERAL LOG</a><br>
+	<a class="menuitem" href="#h2.5">ACCOUNTING</a><br>
 	
+<h2 id="h2.0">Overview (common notes).</h2>
+<p class="point">
+I. The server for access to some essential info demands a client registration (see <a href="#h2.5">ACCOUNTING</a>)<br>
+But many requests are performed without it.<br>
+It is, in first turn, the index request, namely "/"<br>
+The essential info is, in first turn, "/main"<br>
+This "/main" request is a one page browser application that by means of HTML, CSS and JS ordering and helping  accesses to other requests.<br>
+</p>
+<p class="point">
+II. For given account (see <a href="#h2.5">ACCOUNTING</a>) the server tracks performing a request and does not allow to start a same request (i. e. a request with the same path) while the first is not performed.<br>
+</p>
+<p class="point">
+III. The server does not allow two accounts with the sane IP address.<br>
+In first turn, this means that it is impossible to work by mean of more than one agent, For example with the Chromium and the Opera.<br>
+Beside the last, if a user places behind the NAT he is allowed to work on only one machine of the local net.<br>
+</p>
+
+
+
 <h2 id="h2.1">Invoking and mode.</h2>
 The server is CLI program that has next command line for starting:<br>
 prog mode=&lt;mode value&gt;. Here inside angle brackets  there is a decimal integer that represents a mode;for example ./mmst mode=1<br>
@@ -120,6 +141,8 @@ You have an account on the site. It has been prolonged for 720 hours.<br>
 var yourIPHasAcc = `
 <h2> There is account with your IP.</h2>
 <p>
-Your request for registration has been ignored,
+Your request for registration has been ignored<br>
+It may be if you have worked with the site through some agent (browser), do not delete account there, and now are attempting to work through other agent.<br>
+If you want to continue so you must return and delete there accoun be the request /deleteMyAccount.
 </p>
 `

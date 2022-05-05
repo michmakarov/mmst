@@ -378,7 +378,7 @@ func myAccountHandler(w http.ResponseWriter, r *http.Request) {
 	//if accName == "?" {//220422 06:29
 	//	panic("myAccountHandler: no account name")
 	//}
-	if acc = getAccount([]byte(accName)); acc == nil {
+	if acc = getAccountByAccName([]byte(accName)); acc == nil {
 		panic(fmt.Sprintf("myAccountHandler: no account of name %s", accName))
 	}
 	msg = fmt.Sprintf("<h2>Accunt %v or(in hex coding)\"%x\" </h2>", accName, string(accName))
@@ -493,11 +493,31 @@ func problem_220415Handler(w http.ResponseWriter, r *http.Request) {
 
 //2200425 17:57
 func longOperHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
 	var msg string
 	var start = time.Now()
-	time.Sleep(3 * time.Second)
-	var dur = time.Since(start)
-	msg = fmt.Sprintf("The long operation here, dur=%v", dur)
+	var sleepDur int // >=1000 <=15000 - sleep time in milliseconds, see srv.WriteTimeout:  20 * time.Second
+	var sleepTime time.Duration
+	var strDur string
+	var dur time.Duration
+
+	if r.FormValue("pw") != passWord {
+		panic(fmt.Sprintf("longOperHandler panic: wrong password"))
+	}
+
+	strDur = r.FormValue("dur")
+	if sleepDur, err = strconv.Atoi(strDur); err != nil {
+		sleepDur = 1000
+		printDebug(fmt.Sprintf("longOperHandler: bad the dur parameter; err=%s", err.Error()))
+	}
+	if sleepDur > 15000 {
+		sleepDur = 1000
+	}
+
+	sleepTime = time.Duration(sleepDur) * time.Millisecond
+	time.Sleep(sleepTime)
+	dur = time.Since(start)
+	msg = fmt.Sprintf("The long operation here; sleep=%v, dur=%v", sleepTime, dur)
 	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
@@ -514,7 +534,7 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 	var templ *template.Template
 
 	var tD templData
-	tD.ReqNum = flr.feelerCount
+	tD.ReqNum = flr.getReqCount()
 	tD.Ver = versionInfo
 
 	fileName = "./html/ind.html"
@@ -530,4 +550,18 @@ func indHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(200)
 
+}
+
+func deleteMyAccountHandler(w http.ResponseWriter, r *http.Request) {
+	var msg string
+	var accName = r.Context().Value(AccNameCtxKey).([]byte)
+	if delAccount(accName) {
+		msg = fmt.Sprintf("Account %v was removed", accName)
+	} else {
+		panic(fmt.Sprintf("deleteMyAccountHandler: No account %v", accName))
+	}
+
+	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(200)
+	w.Write([]byte(msg))
 }

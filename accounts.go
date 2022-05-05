@@ -4,12 +4,13 @@ package main
 import (
 	"container/list"
 	"fmt"
-	"io/ioutil"
+
+	//"io/ioutil"
 
 	//"net"
 	"net/http"
-	"os"
-	"strings"
+	//"os"
+	//"strings"
 	"sync"
 	"time"
 )
@@ -42,7 +43,7 @@ func init() {
 }
 
 //220118 05:43 The func takes an account name and returns a pointer to an account if it exists or nil if not
-func getAccount(accName []byte) *Account {
+func getAccountByAccName(accName []byte) *Account {
 	accountsMtx.Lock()
 	defer accountsMtx.Unlock()
 	for e := accounts.Front(); e != nil; e = e.Next() {
@@ -57,24 +58,25 @@ func getAccount(accName []byte) *Account {
 //220330 15:02 It expands the functionallity of the getCookieVal
 //220421 14:18 it returns accName (mess) in dependence of res
 // 0 -> as it is given by getCookieVal; 1 -> "?"; 2->"??"; 3->"???"
-func getAccount2(r *http.Request) (mess []byte, res byte) {
+//220504 13:15 There is rude nonsense that was born by thoughtles approach to designing functions
+//It is former "getAccount2"
+//
+func convertCookieToAccName(r *http.Request) (mess []byte, res byte) {
 	var acc *Account
 	mess, res = getCookieVal(r)
 	switch res {
-	case 0:
 	case 1:
-		mess = []byte("?")
+		mess = []byte("?") //no cookie
 	case 2:
-		mess = []byte("??")
-	default:
-		panic(fmt.Sprintf("getAccount2: getCookieVal returned illegal value %d", res))
+		mess = []byte("??") //no deciphering
 	}
 
-	acc = getAccount([]byte(mess))
-	if acc == nil {
-		res = 3
-		mess = []byte("???")
-		//mess = []byte(fmt.Sprintf("getAccount: from %s was a valid cookie (val = %s) but an account absences", r.RemoteAddr, mess))
+	if res == 0 { //checking that there is account correspondent to the cookie
+		acc = getAccountByAccName([]byte(mess))
+		if acc == nil {
+			res = 3
+			mess = []byte("???")
+		}
 	}
 	return
 }
@@ -276,7 +278,7 @@ func saveAccountList() {
 		f.WriteString(line)
 	}
 }
-*/
+
 
 //220307 16:38
 //220308 08:56 It is presumed and checked that the file consist of lines that have format that is described for saveAccountList function.
@@ -328,7 +330,9 @@ func restoreAccounts() {
 	fmt.Printf("restoreAccounts: %d accounts was successfully restored\n", acc)
 
 }
+*/
 
+/*
 //220309 10:42
 //220404 11:32 for what is it?: for restoreAccounts
 func accountLineToAccount(l string) (ac *Account) {
@@ -345,14 +349,16 @@ func accountLineToAccount(l string) (ac *Account) {
 
 	return ac
 }
+*/
 
 //220325 09:12 The func removes the corresponding account if it exists
 //220330 09:36 It returns true if some accound was deleted
-func delAccount(accName string) bool {
+//220505 15:53 (revision)
+func delAccount(accName []byte) bool {
 	accountsMtx.Lock()
 	defer accountsMtx.Unlock()
 	for e := accounts.Front(); e != nil; e = e.Next() {
-		if string(e.Value.(*Account).Name) == string(accName) {
+		if b, _ := compareSlices(e.Value.(*Account).Name, accName); b {
 			accounts.Remove(e)
 			return true
 		}
@@ -477,6 +483,7 @@ func IPHasAccount(ip string) (accName []byte) {
 	}
 	for e := accounts.Front(); e != nil; e = e.Next() {
 		acc = e.Value.(*Account)
+		//printDebug(fmt.Sprintf("accounts.IPHasAccount: acc.Options[RA]=%s, ip=%s", acc.Options["RA"], ip))
 		if IPFromRA(acc.Options["RA"]) == ip {
 			accName = acc.Name
 		}
