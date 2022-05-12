@@ -90,17 +90,21 @@ func (pl *PerfList) inPerforming(r *http.Request) bool {
 	return false
 }
 
-func (pl *PerfList) String() string {
-	var s string
+//220506 00:43
+func (pl *PerfList) String(le string) (res string) {
 	var pr *PerformRec
 	var dur time.Duration
+	var count int
 	pl.mtx.Lock()
+	res = fmt.Sprintf("not dane list  %s", le)
 	for e := pl.notDone.Front(); e != nil; e = e.Next() {
+		count++
 		pr = e.Value.(*PerformRec)
 		dur = time.Since(pr.Start)
-		s = fmt.Sprintf("", pr.R.RemoteAddr, pr.R.RequestURI, pr.Start.Format(timeFormat), dur)
+		res = res + fmt.Sprintf("RA=%s;URL=%s;Start=%s; dur=%v%s", pr.R.RemoteAddr, pr.R.RequestURI, pr.Start.Format(timeFormat), dur, le)
 	}
+	res = res + fmt.Sprintf("-------count=%d%s", count, le)
 
 	pl.mtx.Unlock()
-	return s
+	return
 }

@@ -565,3 +565,13 @@ func deleteMyAccountHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write([]byte(msg))
 }
+
+//220506  00:52
+func notDoneHandler(w http.ResponseWriter, r *http.Request) {
+	var msg string
+	msg = "<p>" + perfList.String("<br>") + "</p>"
+
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(200)
+	w.Write([]byte(msg))
+}

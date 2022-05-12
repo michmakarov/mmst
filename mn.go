@@ -117,6 +117,7 @@ func main() {
 	mx.HandleFunc("/showGeneralLog", showGeneralLogHandler)
 	mx.HandleFunc("/longOper", longOperHandler)
 	mx.HandleFunc("/main", mainHandler)
+	mx.HandleFunc("/notDone", notDoneHandler)
 
 	mx.HandleFunc("/e_2", e_2Handler)
 
